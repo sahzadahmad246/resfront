@@ -1,0 +1,53 @@
+.status-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 20px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+}
+
+.step-completion {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  margin-right: 16px;
+}
+
+.step.active .step-completion {
+  background-color: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
+}
+
+.step-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-title {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.step-timestamp {
+  font-size: 10px;
+  color: #666;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background-color: #ccc;
+  margin-left: 8px;
+  margin-right: 8px;
+}
