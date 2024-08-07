@@ -20,6 +20,7 @@ import {
   singleUserReducer,
   updateProductReducer,
   updateStockReducer,
+  addOutletInfoReducer, updateOutletInfoReducer, getOutletInfoReducer,
 } from "./reducers/adminReducer";
 import { updateOrderStatus } from "./actions/orderAction";
 const cartItems = localStorage.getItem("cartItems")
@@ -52,6 +53,9 @@ const store = configureStore({
     updateProduct: updateProductReducer,
     allOrders: allOrdersReducer,
     orderStatus: updateOrderStatus,
+    addOutletInfo: addOutletInfoReducer,
+    updateOutletInfo: updateOutletInfoReducer,
+    getOutletInfo: getOutletInfoReducer
   },
   preloadedState: initialState,
 });

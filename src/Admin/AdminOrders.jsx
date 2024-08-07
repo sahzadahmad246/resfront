@@ -33,13 +33,13 @@ const AdminOrders = () => {
   const { error: updateError } = useSelector((state) => state.orderStatus);
   const [loadingButton, setLoadingButton] = useState(false);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [filterStatus, setFilterStatus] = useState("Accepted");
   const [activeStatus, setActiveStatus] = useState("Accepted");
   const [newOrders, setNewOrders] = useState([]);
   const [prevOrdersLength, setPrevOrdersLength] = useState(0);
   const [showBill, setShowBill] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  
 
   useEffect(() => {
     const fetchOrders = () => {
@@ -50,7 +50,7 @@ const AdminOrders = () => {
 
     const intervalId = setInterval(() => {
       fetchOrders();
-    },2000);
+    }, 2000);
 
     return () => clearInterval(intervalId);
   }, [dispatch]);
@@ -63,7 +63,8 @@ const AdminOrders = () => {
         }
       });
 
-      filterOrders(filterStatus);
+      // Update filteredOrders with all orders after fetching them
+      setFilteredOrders([...orders]);
 
       const placedOrders = orders.filter(
         (order) => order.orderStatus === "Placed"
@@ -84,27 +85,40 @@ const AdminOrders = () => {
     if (updateError) {
       dispatch(clearErrors());
     }
-  }, [
-    dispatch,
-    error,
-    orders,
-    users,
-    updateError,
-    filterStatus,
-    prevOrdersLength,
-  ]);
+  }, [dispatch, error, orders, users, updateError, prevOrdersLength]);
 
-  const filterOrders = (status) => {
-    setFilterStatus(status);
-    setActiveStatus(status);
-    let filtered = [];
-    if (status === "all") {
-      filtered = [...orders];
-    } else {
-      filtered = orders.filter((order) => order.orderStatus === status);
-    }
-    setFilteredOrders(filtered.reverse());
-  };
+  useEffect(() => {
+    // Apply filtering based on activeStatus and searchTerm
+    const filterOrders = () => {
+      let filtered = [...orders];
+      
+      if (activeStatus !== "All") {
+        filtered = filtered.filter((order) => order.orderStatus === activeStatus);
+      }
+  
+      if (searchTerm.trim() !== "") {
+        const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+        filtered = filtered.filter((order) => {
+          const { user, deliveryInfo, _id } = order;
+          const userName = users[user]?.name.toLowerCase();
+          const userPhone = deliveryInfo.phone.toLowerCase();
+          return (
+            userName.includes(normalizedSearchTerm) ||
+            userPhone.includes(normalizedSearchTerm) ||
+            _id.toLowerCase().includes(normalizedSearchTerm)
+          );
+        });
+      }
+  
+      // Sort orders in descending order based on creation date
+      filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      setFilteredOrders(filtered);
+    };
+  
+    filterOrders();
+  }, [searchTerm, orders, users, activeStatus]);
+  
 
   const handleOrderStatusChange = (orderId, currentStatus) => {
     setLoadingButton(true);
@@ -150,30 +164,6 @@ const AdminOrders = () => {
     setShowBill(false);
   };
 
-  // Function to filter orders based on search term
-  const searchOrders = () => {
-    if (searchTerm.trim() === "") {
-      setFilteredOrders([]);
-    } else {
-      const normalizedSearchTerm = searchTerm.toLowerCase().trim();
-      const filtered = orders.filter((order) => {
-        const { user, deliveryInfo, _id } = order;
-        const userName = users[user]?.name.toLowerCase();
-        const userPhone = deliveryInfo.phone.toLowerCase();
-        return (
-          userName.includes(normalizedSearchTerm) ||
-          userPhone.includes(normalizedSearchTerm) ||
-          _id.toLowerCase().includes(normalizedSearchTerm)
-        );
-      });
-      setFilteredOrders(filtered);
-    }
-  };
-
-  useEffect(() => {
-    searchOrders();
-  }, [searchTerm, orders, users]);
-
   return (
     <div className="dashboard-main">
       <MetaData title="Orders - Thai Chilli China" />
@@ -196,25 +186,25 @@ const AdminOrders = () => {
           <div className="live-order-top">
             <div className="live-order-top-1">
               <span
-                onClick={() => filterOrders("Accepted")}
+                onClick={() => setActiveStatus("Accepted")}
                 className={activeStatus === "Accepted" ? "active-status" : ""}
               >
                 Preparing
               </span>
               <span
-                onClick={() => filterOrders("Ready")}
+                onClick={() => setActiveStatus("Ready")}
                 className={activeStatus === "Ready" ? "active-status" : ""}
               >
                 Ready
               </span>
               <span
-                onClick={() => filterOrders("On the way")}
+                onClick={() => setActiveStatus("On the way")}
                 className={activeStatus === "On the way" ? "active-status" : ""}
               >
                 On the way
               </span>
               <span
-                onClick={() => filterOrders("Delivered")}
+                onClick={() => setActiveStatus("Delivered")}
                 className={activeStatus === "Delivered" ? "active-status" : ""}
               >
                 Delivered
@@ -233,17 +223,17 @@ const AdminOrders = () => {
           </div>
           <div className="order-list">
             {filteredOrders.length === 0 ? (
-              filterStatus === "Accepted" ? (
-                <div className="no-orders">
-                  <CiSearch size={50} color="#ff004d" />
-                  <p>Searching for new orders</p>
-                </div>
-              ) : (
-                <div className="no-orders">
+              <div className="no-orders">
+                {orders.length === 0 ? (
+                  <>
+                    <CiSearch size={50} color="#ff004d" />
+                    <p>Searching for new orders</p>
+                  </>
+                ) : (
                   <FaBox size={50} color="#ff004d" />
-                  <p>No orders found</p>
-                </div>
-              )
+                )}
+                <p>No orders found</p>
+              </div>
             ) : (
               <div>
                 {filteredOrders.map((order) => (
@@ -327,13 +317,11 @@ const AdminOrders = () => {
                             <span>
                               Total Bill{" "}
                               <span className="px-2">₹{order.totalPrice}</span>
-                              <span
-                                className={
-                                  order.paymentInfo.status === "paid"
-                                    ? "text-success"
-                                    : "text-danger"
-                                }
-                              >
+                              <span className={
+                                order.paymentInfo.status === "paid"
+                                  ? "text-success"
+                                  : "text-danger"
+                              }>
                                 {order.paymentInfo.status}
                               </span>
                             </span>

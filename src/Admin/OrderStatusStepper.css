@@ -24,9 +24,9 @@
 }
 
 .step.active .step-completion {
-  background-color: #4caf50;
+  background-color: #22c55e;
   color: #fff;
-  border-color: #4caf50;
+  border-color: #22c55e;
 }
 
 .step-details {

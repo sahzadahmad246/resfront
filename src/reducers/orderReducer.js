@@ -14,6 +14,8 @@ import {
   UPDATE_ORDER_STATUS_REQUEST,
   UPDATE_ORDER_STATUS_SUCCESS,
   UPDATE_ORDER_STATUS_FAIL,
+  UPDATE_ORDER_STATUS_RESET,
+  
   CLEAR_ERRORS,
 } from "../constants/orderConstant";
 
@@ -164,16 +166,15 @@ export const allOrdersReducer = (state = initialAllOrdersState, action) => {
   }
 };
 
-const initialStatusState = {
+
+// reducer to update order status
+const initialUpdateOrderStatusState = {
   loading: false,
-  success: false,
+  isUpdated: false,
   error: null,
 };
 
-export const updateOrderStatus = (
-  state = initialStatusState,
-  action
-) => {
+export const updateOrderStatusReducer = (state = initialUpdateOrderStatusState, action) => {
   switch (action.type) {
     case UPDATE_ORDER_STATUS_REQUEST:
       return {
@@ -184,13 +185,18 @@ export const updateOrderStatus = (
       return {
         ...state,
         loading: false,
-        success: true,
+        isUpdated: true,
       };
     case UPDATE_ORDER_STATUS_FAIL:
       return {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case UPDATE_ORDER_STATUS_RESET:
+      return {
+        ...state,
+        isUpdated: false,
       };
     case CLEAR_ERRORS:
       return {
@@ -201,3 +207,4 @@ export const updateOrderStatus = (
       return state;
   }
 };
+

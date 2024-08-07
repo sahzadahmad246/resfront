@@ -21,6 +21,17 @@ import {
   UPDATE_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_RESET,
   UPDATE_PRODUCT_FAIL,
+  ADD_OUTLET_INFO_REQUEST,
+  ADD_OUTLET_INFO_SUCCESS,
+  ADD_OUTLET_INFO_RESET,
+  ADD_OUTLET_INFO_FAIL,
+  UPDATE_OUTLET_INFO_REQUEST,
+  UPDATE_OUTLET_INFO_SUCCESS,
+  UPDATE_OUTLET_INFO_RESET,
+  UPDATE_OUTLET_INFO_FAIL,
+  GET_OUTLET_INFO_REQUEST,
+  GET_OUTLET_INFO_SUCCESS,
+  GET_OUTLET_INFO_FAIL,
   CLEAR_ERRORS,
 } from "../constants/adminConstant";
 
@@ -194,6 +205,99 @@ export const deleteProduct = (id) => async (dispatch) => {
     dispatch({
       type: DELETE_PRODUCT_FAIL,
       payload: error.response.data.message || "Something went wrong",
+    });
+  }
+};
+
+// Action for adding outlet information
+export const addOutletInfo = (formData) => async (dispatch) => {
+  try {
+    dispatch({ type: ADD_OUTLET_INFO_REQUEST });
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.post(
+      "http://localhost:5000/api/v1/admin/outlet-info",
+      formData,
+      config
+    );
+
+    dispatch({
+      type: ADD_OUTLET_INFO_SUCCESS,
+      payload: data,
+    });
+
+    dispatch({ type: ADD_OUTLET_INFO_RESET });
+  } catch (error) {
+    dispatch({
+      type: ADD_OUTLET_INFO_FAIL,
+      payload: error.response.data.message || "Something went wrong",
+    });
+  }
+};
+
+// Action for updating outlet information
+export const updateOutletInfo = (id, formData) => async (dispatch) => {
+  try {
+    dispatch({ type: UPDATE_OUTLET_INFO_REQUEST });
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.put(
+      `http://localhost:5000/api/v1/admin/outlet-info/${id}`,
+      formData,
+      config
+    );
+
+    dispatch({
+      type: UPDATE_OUTLET_INFO_SUCCESS,
+      payload: data.success,
+    });
+
+    dispatch({ type: UPDATE_OUTLET_INFO_RESET });
+  } catch (error) {
+    dispatch({
+      type: UPDATE_OUTLET_INFO_FAIL,
+      payload: error.response.data.message || "Something went wrong",
+    });
+  }
+};
+
+// Action for getting outlet information
+export const getOutletInfo = () => async (dispatch) => {
+  try {
+    dispatch({ type: GET_OUTLET_INFO_REQUEST });
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      withCredentials: true
+    };
+
+    const { data } = await axios.get(
+      "http://localhost:5000/api/v1/admin/outlet-info",
+      config
+    );
+
+    dispatch({
+      type: GET_OUTLET_INFO_SUCCESS,
+      payload: data.admin
+    });
+  } catch (error) {
+    dispatch({
+      type: GET_OUTLET_INFO_FAIL,
+      payload: error.response.data.message || "Something went wrong"
     });
   }
 };

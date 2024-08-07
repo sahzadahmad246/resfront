@@ -1,6 +1,7 @@
 import React from "react";
 import { format, isValid } from "date-fns";
 import "./OrderStatusStepper.css";
+import { IoMdCheckmark } from "react-icons/io";
 
 const OrderStatusStepper = ({ statusHistory, createdAt, currentStatus }) => {
   const steps = [
@@ -39,7 +40,9 @@ const OrderStatusStepper = ({ statusHistory, createdAt, currentStatus }) => {
 
         return (
           <div key={index} className={`step ${isActive ? "active" : ""}`}>
-            <div className="step-completion">{isActive ? "✓" : index + 1}</div>
+            <div className="step-completion">
+              {isActive ? <IoMdCheckmark size={20} color="white" /> : index + 1}
+            </div>
             <div className="step-details">
               <div className="step-title">
                 <span>{step.label}</span>

@@ -1,5 +1,5 @@
 .order-history-filters {
-  border: 1px solid red;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -23,3 +23,10 @@
     width: 30%;
     pad: 2px;
 }
+
+
+.filter-buttons button.active-filter {
+    background-color: rgb(244 63 94);
+    color: white;
+  }
+  

@@ -21,6 +21,17 @@ import {
   UPDATE_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_RESET,
   UPDATE_PRODUCT_FAIL,
+  ADD_OUTLET_INFO_REQUEST,
+  ADD_OUTLET_INFO_SUCCESS,
+  ADD_OUTLET_INFO_RESET,
+  ADD_OUTLET_INFO_FAIL,
+  UPDATE_OUTLET_INFO_REQUEST,
+  UPDATE_OUTLET_INFO_SUCCESS,
+  UPDATE_OUTLET_INFO_RESET,
+  UPDATE_OUTLET_INFO_FAIL,
+  GET_OUTLET_INFO_REQUEST,
+  GET_OUTLET_INFO_SUCCESS,
+  GET_OUTLET_INFO_FAIL,
   CLEAR_ERRORS,
 } from "../constants/adminConstant";
 
@@ -219,6 +230,111 @@ export const deleteProductReducer = (state = {}, action) => {
       return {
         ...state,
         isDeleted: false,
+      };
+    default:
+      return state;
+  }
+};
+
+
+// Reducer for adding outlet information
+export const addOutletInfoReducer = (state = { outlet: {} }, action) => {
+  switch (action.type) {
+    case ADD_OUTLET_INFO_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ADD_OUTLET_INFO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        success: action.payload.success,
+        outlet: action.payload.outlet,
+      };
+    case ADD_OUTLET_INFO_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case ADD_OUTLET_INFO_RESET:
+      return {
+        ...state,
+        success: false,
+        error: null, // Reset error state if needed
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+// Reducer for updating outlet information
+export const updateOutletInfoReducer = (state = { outlet: {} }, action) => {
+  switch (action.type) {
+    case UPDATE_OUTLET_INFO_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UPDATE_OUTLET_INFO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        isUpdated: action.payload.success,
+        outlet: action.payload.outlet, // Ensure outlet information is updated
+      };
+    case UPDATE_OUTLET_INFO_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case UPDATE_OUTLET_INFO_RESET:
+      return {
+        ...state,
+        isUpdated: false,
+        error: null, // Reset error state if needed
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+
+export const getOutletInfoReducer = (state = { outlet: {} }, action) => {
+  switch (action.type) {
+    case GET_OUTLET_INFO_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case GET_OUTLET_INFO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        outlet: action.payload
+      };
+    case GET_OUTLET_INFO_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null
       };
     default:
       return state;

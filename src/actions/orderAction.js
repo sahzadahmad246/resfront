@@ -124,6 +124,10 @@ export const getAllOrders = () => async (dispatch) => {
   }
 };
 
+
+
+
+// Update order status action
 export const updateOrderStatus = (orderId, status) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_ORDER_STATUS_REQUEST });
@@ -141,18 +145,14 @@ export const updateOrderStatus = (orderId, status) => async (dispatch) => {
       config
     );
 
-    dispatch({
-      type: UPDATE_ORDER_STATUS_SUCCESS,
-      payload: data,
-    });
+    dispatch({ type: UPDATE_ORDER_STATUS_SUCCESS, payload: data.success });
   } catch (error) {
     dispatch({
       type: UPDATE_ORDER_STATUS_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: error.response.data.message,
     });
   }
 };
-
 
 // Clear Errors
 export const clearErrors = () => (dispatch) => {
