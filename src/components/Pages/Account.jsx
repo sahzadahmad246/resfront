@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Profile from "../../Account/Profile";
 import Orders from "../../Account/Orders";
 import Address from "../../Account/Address";
-import Payments from "../../Account/Payments";
+
 import Loader from "../Layout/Loader";
 import profilePic from "../../images/china.png";
 import { logout, clearErrors } from "../../actions/userAction";

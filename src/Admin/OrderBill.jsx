@@ -18,7 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 const OrderBill = ({ order }) => {
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.singleUser);
-
+  const { outlet } = useSelector((state) => state.getOutletInfo);
+console.log(outlet)
   useEffect(() => {
     dispatch(getSingleUser(order.user));
   }, [order]);
@@ -31,14 +32,13 @@ const OrderBill = ({ order }) => {
       <Document>
         <Page size={{ width: 80, height: "auto" }} style={styles.page}>
           <View style={styles.header}>
-            <Image src={image} style={styles.outletLogo} />
+            <Image src={outlet.outletLogo?.url} style={styles.outletLogo} />
             <View style={styles.headerBox}>
               <Text style={styles.headerText}>
-                {order.deliveryInfo.address} {order.deliveryInfo.city}{" "}
-                {order.deliveryInfo.pincode}
+                {outlet.address} 
               </Text>
               <Text style={styles.headerText}>
-                Mobile No. 7355109388, 7355109388 GST- BGDHD7362GD
+                Mobile No. {outlet.altPhone},  GST- {outlet.gst}
               </Text>
               <Text style={styles.headerText}>Order Id- #{order._id}</Text>
             </View>

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { addItemsToCart } from "../../actions/cartAction";
 import "./Product.css";
 import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
 
 const Product = ({ product }) => {
   const [foodTypeIcon, setFoodTypeIcon] = useState();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (product.foodType === "non-veg") {
@@ -25,25 +29,40 @@ const Product = ({ product }) => {
     inHalf: true,
   };
 
+  const handleAddToCart = () => {
+    dispatch(addItemsToCart(product._id, 1));
+    toast.success("Item added to cart");
+  };
+
   return (
     <div className="productCard">
       <div className="product-box-left">
         <img src={product.images[0].url} alt={product.name} />
-        <button className="add-to-cart-btn">ADD</button>
       </div>
-      <Link to={`/product/${product._id}`}>
-        <div className="product-box-right">
-          <h3 className="product-name">{product.name}</h3>{" "}
-          <span className="food-type-icon">
-            <img src={foodTypeIcon} alt={product.foodType} />
-          </span>
-          <p className="product-price">{`₹ ${product.price}`}</p>
+
+      <div className="product-box-right">
+        <h3 className="product-name">
+          <Link to={`/product/${product._id}`}>
+            <span className="product-name-price">
+              <span className="fw-bold fs-5">{product.name}</span>
+              <img className="ps-1" src={foodTypeIcon} alt={product.foodType} />
+            </span>
+          </Link>
           <div className="product-rating">
-            <ReactStars {...options} />{" "}
+            <ReactStars {...options} />
             <span>({product.numOfReviews} Reviews)</span>
           </div>
+        </h3>
+        <div className="p-price-add-c">
+          <span className="fw-bold">{`₹ ${product.price}`}</span>
+          <button
+            className="bg-danger px-2 text-white rounded-lg"
+            onClick={handleAddToCart}
+          >
+            ADD
+          </button>
         </div>
-      </Link>
+      </div>
     </div>
   );
 };

@@ -38,7 +38,7 @@ export const login = (formData) => async (dispatch) => {
   try {
     dispatch({ type: LOGIN_REQUEST });
     const { data } = await axios.post(
-      `http://localhost:5000/api/v1/login`,
+      `/api/v1/login`,
       { phone, password },
       {
         headers: { "Content-Type": "application/json" },

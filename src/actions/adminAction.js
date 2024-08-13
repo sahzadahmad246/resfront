@@ -273,6 +273,8 @@ export const updateOutletInfo = (id, formData) => async (dispatch) => {
   }
 };
 
+
+
 // Action for getting outlet information
 export const getOutletInfo = () => async (dispatch) => {
   try {
@@ -286,7 +288,7 @@ export const getOutletInfo = () => async (dispatch) => {
     };
 
     const { data } = await axios.get(
-      "http://localhost:5000/api/v1/admin/outlet-info",
+      "/api/v1/admin/outlet-info",
       config
     );
 

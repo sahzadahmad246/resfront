@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import ReactStars from "react-rating-stars-component";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { addItemsToCart } from "../../actions/cartAction";
 import "./SearchSuggetion.css";
 import { Link } from "react-router-dom";
 import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
+
 const SearchSuggetion = ({ product }) => {
-  const options = {
-    edit: false,
-    color: "rgba(20,20,20,0.1)",
-    activeColor: "tomato",
-    size: window.innerWidth > 600 ? 18 : 25,
-    value: product && product.ratings,
-    inHalf: true,
-  };
   const [foodTypeIcon, setFoodTypeIcon] = useState();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (product.foodType === "non-veg") {
@@ -22,29 +19,52 @@ const SearchSuggetion = ({ product }) => {
       setFoodTypeIcon(vegIcon);
     }
   }, [product.foodType]);
+
+  const options = {
+    edit: false,
+    color: "rgba(20,20,20,0.1)",
+    activeColor: "tomato",
+    size: window.innerWidth > 600 ? 18 : 25,
+    value: product && product.ratings,
+    inHalf: true,
+  };
+
+  const handleAddToCart = () => {
+    dispatch(addItemsToCart(product._id, 1));
+    toast.success("Item added to cart");
+  };
+
   return (
-    <>
-      <div className="suggetion-main">
-        <div className="suggetion-card">
-          <div className="suggetion-card-left">
-            <img src={ product.images[0] && product.images[0].url} alt={product.name} />
-          </div>
-          <Link to={`/product/${product._id}`} className="suggetion-card-right">
-            <h3 className="product-name">
-              {product.name}{" "}
-              <span className="food-type-icon">
-                <img src={foodTypeIcon} alt={product.foodType} />
-              </span>
-            </h3>
-            <p className="product-price">{`₹ ${product.price}`}</p>
+    <div className="productCard searchSuggetionCard my-3">
+      <div className="product-box-left">
+        <img src={product.images[0]?.url} alt={product.name} />
+      </div>
+
+      <div className="product-box-right ">
+        <h3 className="product-name">
+          <Link to={`/product/${product._id}`}>
+            <span className="product-name-price ">
+              <span className="fw-bold fs-5">{product.name}</span>
+              <img className="ps-1" src={foodTypeIcon} alt={product.foodType} />
+            </span>
+
             <div className="product-rating">
-              <ReactStars {...options} />{" "}
+              <ReactStars {...options} /> 
               <span>({product.numOfReviews} Reviews)</span>
             </div>
           </Link>
+        </h3>
+        <div className="p-price-add-c">
+          <span className="fw-bold">{`₹ ${product.price}`}</span>
+          <button
+            className="bg-danger px-2 text-white rounded-lg"
+            onClick={handleAddToCart}
+          >
+            ADD
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

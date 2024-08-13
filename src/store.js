@@ -12,6 +12,7 @@ import {
   allOrdersReducer,
   myOrdersReducer,
   orderDetailsReducer,
+  codOrderReducer,
 } from "./reducers/orderReducer";
 import {
   addNewProductReducer,
@@ -55,7 +56,8 @@ const store = configureStore({
     orderStatus: updateOrderStatus,
     addOutletInfo: addOutletInfoReducer,
     updateOutletInfo: updateOutletInfoReducer,
-    getOutletInfo: getOutletInfoReducer
+    getOutletInfo: getOutletInfoReducer,
+    codOrder: codOrderReducer
   },
   preloadedState: initialState,
 });

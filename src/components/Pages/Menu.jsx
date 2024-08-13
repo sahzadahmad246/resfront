@@ -7,10 +7,12 @@ import MetaData from "../../components/Home/MetaData";
 import { CiFilter } from "react-icons/ci";
 import { IconButton } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
+import { useLocation } from "react-router-dom";
 import "./Menu.css";
 
 const Menu = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { products, loading, error } = useSelector((state) => state.products);
 
   const [filters, setFilters] = useState({
@@ -21,11 +23,22 @@ const Menu = () => {
   });
 
   useEffect(() => {
+    // Extract subCategory from the URL query parameters
+    const queryParams = new URLSearchParams(location.search);
+    const subCategoryFromQuery = queryParams.get("subCategory");
+
+    if (subCategoryFromQuery) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        subCategory: decodeURIComponent(subCategoryFromQuery),
+      }));
+    }
+
     dispatch(getProducts());
     if (error) {
       dispatch(clearErrors());
     }
-  }, [dispatch, error]);
+  }, [dispatch, error, location.search]);
 
   const clearAllFilters = () => {
     setFilters({
@@ -77,9 +90,13 @@ const Menu = () => {
         <div className="menu-left">
           <div className="filter-section">
             <h3>
-              <span>Filters</span>
+              <span>Filter Options</span>
               {Object.keys(filters).some((key) => filters[key]) && (
-                <IconButton onClick={clearAllFilters} className="text-danger" title="Clear filter">
+                <IconButton
+                  onClick={clearAllFilters}
+                  className="text-danger"
+                  title="Clear filter"
+                >
                   <ClearIcon />
                 </IconButton>
               )}
@@ -98,19 +115,7 @@ const Menu = () => {
                   ))}
                 </select>
               </div>
-              <div className="filter-type">
-                <select
-                  value={filters.subCategory}
-                  onChange={(e) => applyFilter("subCategory", e.target.value)}
-                >
-                  <option value="">Category</option>
-                  {subCategories.map((subCategory) => (
-                    <option key={subCategory} value={subCategory}>
-                      {subCategory}
-                    </option>
-                  ))}
-                </select>
-              </div>
+
               <div className="filter-type">
                 <select
                   value={filters.foodType}
@@ -138,6 +143,19 @@ const Menu = () => {
                       value={JSON.stringify(range.value)}
                     >
                       {range.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="filter-type">
+                <select
+                  value={filters.subCategory}
+                  onChange={(e) => applyFilter("subCategory", e.target.value)}
+                >
+                  <option value="">Category</option>
+                  {subCategories.map((subCategory) => (
+                    <option key={subCategory} value={subCategory}>
+                      {subCategory}
                     </option>
                   ))}
                 </select>

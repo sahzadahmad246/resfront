@@ -1,37 +1,40 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
 import CartItemCard from "../Product/CartItemCard";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
+import { getOutletInfo } from "../../actions/adminAction";
+import { loadCartItems } from "../../actions/cartAction"; // Import the action
+
 const Cart = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { cartItems } = useSelector((state) => state.cart);
   const { error, loading, isAuthenticated, user } = useSelector(
     (state) => state.user
   );
+  const { outlet } = useSelector((state) => state.getOutletInfo);
 
-  // Calculate subtotal
+  useEffect(() => {
+    dispatch(getOutletInfo(outlet._id));
+    dispatch(loadCartItems()); // Load cart items from local storage
+  }, [dispatch]);
+
   const subtotal = cartItems.reduce((acc, curr) => {
     return acc + curr.price * curr.quantity;
   }, 0);
-
 
   const totalQuantity = cartItems.reduce((acc, curr) => {
     return acc + curr.quantity;
   }, 0);
 
   const deliveryCharge = subtotal > 500 ? 0 : 40;
-
-  
   const discount = 10;
-
-  
   const total = subtotal + deliveryCharge - discount;
 
-  
   const handlePlaceOrder = () => {
-    navigate("/login?redirect=shipping")
+    navigate("/login?redirect=shipping");
   };
 
   return (
@@ -72,14 +75,28 @@ const Cart = () => {
               <h2 className="font-bold">Total</h2>
               <h2 className="font-bold">{`₹${total}`}</h2>
             </div>
-            <button onClick={handlePlaceOrder}>Place Order</button>
+            <button
+              onClick={handlePlaceOrder}
+              disabled={outlet.outletStatus === "Closed"}
+              className={`${
+                outlet.outletStatus === "Closed"
+                  ? "opacity-50 cursor-not-allowed"
+                  : "opacity-100"
+              }`}
+            >
+              {outlet.outletStatus === "Closed"
+                ? "Restaurant is closed"
+                : "Continue"}
+            </button>
           </div>
         </div>
       ) : (
         <div className="no-item">
-        <MdOutlineRemoveShoppingCart size={60}/>
+          <MdOutlineRemoveShoppingCart size={60} />
           <p>No item in the cart</p>
-          <Link to="/menu" cl>View menu</Link>
+          <Link to="/menu" cl>
+            View menu
+          </Link>
         </div>
       )}
     </>

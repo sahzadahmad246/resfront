@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import CheckoutSteps from "./CheckoutSteps";
 import "./ConfirmOrder.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
+import { createOrder } from "../../actions/orderAction";
 
 const ConfirmOrder = () => {
   const { user } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const subtotal = Math.round(
     cartItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0)
   );
+  console.log("subtotl", subtotal)
   const totalQuantity = cartItems.reduce((acc, curr) => acc + curr.quantity, 0);
   const deliveryCharge = subtotal > 500 ? 0 : 40;
   const discount = 10;
@@ -81,6 +84,20 @@ const ConfirmOrder = () => {
       console.error("Error processing payment:", error);
       setLoading(false);
     }
+  };
+
+  const placeCODOrder = async () => {
+    setLoading(true);
+    const paymentData = {
+      subtotal,
+      deliveryCharge,
+      gst,
+      discount,
+      total,
+    };
+
+    sessionStorage.setItem("orderInfo", JSON.stringify(paymentData));
+    navigate("/order/creation");
   };
 
   return (
@@ -174,7 +191,7 @@ const ConfirmOrder = () => {
               <h2>{`₹${discount}`}</h2>
             </div>
             <div className="total-price-info">
-              <h2 className="font-bold">Total</h2>
+              <h2 className="font-bold">Grand Total</h2>
               <h2 className="font-bold">{`₹${total}`}</h2>
             </div>
             <button
@@ -182,7 +199,14 @@ const ConfirmOrder = () => {
               onClick={proceedToPay}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : "Place Order"}
+              {loading ? <CircularProgress size={24} /> : `Pay  ₹${total} Online`}
+            </button>
+            <button
+              className="proceed-to-pay bg-success"
+              onClick={placeCODOrder}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} /> : `Pay  ₹${total} on delivery`}
             </button>
           </div>
         </div>

@@ -70,16 +70,18 @@ ul li .active {
     width: 100%;
     background-color: #fff;
     z-index: 9999;
+
   }
   ul {
     position: fixed;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     bottom: 0;
+    margin: 40;
     width: 100%;
     background: #fff;
-
     height: 80px;
+    box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.1); 
   }
   ul li .active {
     color: #ff004d;
@@ -105,12 +107,11 @@ ul li .active {
   }
   .navbar a {
     text-decoration: none;
-    margin: 0;
     padding: 0;
     font-size: 10px;
   }
   .nav-item {
-    margin: 0px 7px;
+    margin-left: 23px;
     display: flex;
     flex-direction: column;
     justify-content: center;

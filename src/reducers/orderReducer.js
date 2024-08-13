@@ -15,7 +15,9 @@ import {
   UPDATE_ORDER_STATUS_SUCCESS,
   UPDATE_ORDER_STATUS_FAIL,
   UPDATE_ORDER_STATUS_RESET,
-  
+  CREATE_COD_ORDER_REQUEST,
+  CREATE_COD_ORDER_SUCCESS,
+  CREATE_COD_ORDER_FAIL,
   CLEAR_ERRORS,
 } from "../constants/orderConstant";
 
@@ -54,6 +56,44 @@ export const newOrderReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+
+// reducer to create a new cod order
+const initialCODOrderState = {
+  loading: false,
+  order: null,
+  error: null,
+};
+
+export const codOrderReducer = (state = initialCODOrderState, action) => {
+  switch (action.type) {
+    case CREATE_COD_ORDER_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case CREATE_COD_ORDER_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        order: action.payload,
+      };
+    case CREATE_COD_ORDER_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
 
 // reducer to fetch my orders
 const initialMyOrdersState = {

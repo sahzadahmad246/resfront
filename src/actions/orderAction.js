@@ -15,6 +15,9 @@ import {
   UPDATE_ORDER_STATUS_REQUEST,
   UPDATE_ORDER_STATUS_SUCCESS,
   UPDATE_ORDER_STATUS_FAIL,
+  CREATE_COD_ORDER_REQUEST,
+  CREATE_COD_ORDER_SUCCESS,
+  CREATE_COD_ORDER_FAIL,
   CLEAR_ERRORS,
 } from "../constants/orderConstant";
 
@@ -43,6 +46,36 @@ export const createOrder = (order) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: CREATE_ORDER_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+// Create COD Order
+export const createCODOrder = (order) => async (dispatch) => {
+  try {
+    dispatch({ type: CREATE_COD_ORDER_REQUEST });
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.post(
+      "http://localhost:5000/api/v1/cod/order",
+      order,
+      config
+    );
+
+    dispatch({
+      type: CREATE_COD_ORDER_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: CREATE_COD_ORDER_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }

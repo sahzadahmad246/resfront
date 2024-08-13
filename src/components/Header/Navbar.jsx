@@ -7,6 +7,7 @@ import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
 import { GoHome } from "react-icons/go";
 import { VscAccount } from "react-icons/vsc";
+import QuickCart from "../Pages/QuickCart";
 const DesktopNavbar = () => {
   const { user } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
@@ -111,7 +112,7 @@ const Navbar = () => {
     };
   }, []);
 
-  return <>{isMobile ? <MobileNavbar /> : <DesktopNavbar />}</>;
+  return <> {isMobile ? <><MobileNavbar /> </> : <DesktopNavbar />}</>;
 };
 
 export default Navbar;

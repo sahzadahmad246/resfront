@@ -286,8 +286,7 @@ export const updateOutletInfoReducer = (state = { outlet: {} }, action) => {
       return {
         ...state,
         loading: false,
-        isUpdated: action.payload.success,
-        outlet: action.payload.outlet, // Ensure outlet information is updated
+        isUpdated: action.payload,
       };
     case UPDATE_OUTLET_INFO_FAIL:
       return {
@@ -310,6 +309,8 @@ export const updateOutletInfoReducer = (state = { outlet: {} }, action) => {
       return state;
   }
 };
+
+
 
 
 export const getOutletInfoReducer = (state = { outlet: {} }, action) => {

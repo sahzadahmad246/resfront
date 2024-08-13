@@ -13,7 +13,7 @@ import store from "./store";
 import Profile from "./Account/Profile";
 import Orders from "./Account/Orders";
 import Address from "./Account/Address";
-import Payments from "./Account/Payments";
+
 import UpdatePassword from "./components/User/UpdatePassword";
 import ForgotPassword from "./components/User/ForgotPassword";
 import ResetPassword from "./components/User/ResetPassword";
@@ -32,6 +32,7 @@ import Dashboard from "./Admin/Dashboard";
 import AdminProductDetails from "./Admin/AdminProductDetails";
 import AddNewItem from "./Admin/AddNewItem";
 import UpdateProduct from "./Admin/UpdateProduct";
+import CODOrderSuccess from "./Account/CODOrderSuccess";
 function App() {
   const { isAuthenticated, user, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -62,10 +63,11 @@ function App() {
           />
           <Route path="account/orders" element={<Orders />} />
           <Route path="account/address" element={<Address />} />
-          <Route path="account/payments" element={<Payments />} />
+          
           <Route path="password/update" element={<UpdatePassword />} />
           <Route path="password/forgot" element={<ForgotPassword />} />
           <Route path="password/reset/:token" element={<ResetPassword />} />
+          <Route path="/order/creation" element={<CODOrderSuccess />} />
           <Route
             path="shipping"
             element={
@@ -83,6 +85,7 @@ function App() {
             }
           />
           <Route path="success" element={<PaymentSuccess />} />
+          
           <Route
             path="account/orders/:id"
             element={

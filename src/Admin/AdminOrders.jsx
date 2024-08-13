@@ -25,10 +25,10 @@ import { Button, CircularProgress } from "@mui/material";
 import NewOrderPopup from "./NewOrderPopup";
 import OrderStatusStepper from "./OrderStatusStepper";
 import OrderBill from "./OrderBill";
-
+import Loader from "../components/Layout/Loader";
 const AdminOrders = () => {
   const dispatch = useDispatch();
-  const { error, orders } = useSelector((state) => state.allOrders);
+  const { error, orders, loading } = useSelector((state) => state.allOrders);
   const { users } = useSelector((state) => state.singleUser);
   const { error: updateError } = useSelector((state) => state.orderStatus);
   const [loadingButton, setLoadingButton] = useState(false);
@@ -39,7 +39,7 @@ const AdminOrders = () => {
   const [showBill, setShowBill] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  
+
 
   useEffect(() => {
     const fetchOrders = () => {
@@ -91,11 +91,11 @@ const AdminOrders = () => {
     // Apply filtering based on activeStatus and searchTerm
     const filterOrders = () => {
       let filtered = [...orders];
-      
+
       if (activeStatus !== "All") {
         filtered = filtered.filter((order) => order.orderStatus === activeStatus);
       }
-  
+
       if (searchTerm.trim() !== "") {
         const normalizedSearchTerm = searchTerm.toLowerCase().trim();
         filtered = filtered.filter((order) => {
@@ -109,16 +109,16 @@ const AdminOrders = () => {
           );
         });
       }
-  
+
       // Sort orders in descending order based on creation date
       filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      
+
       setFilteredOrders(filtered);
     };
-  
+
     filterOrders();
   }, [searchTerm, orders, users, activeStatus]);
-  
+
 
   const handleOrderStatusChange = (orderId, currentStatus) => {
     setLoadingButton(true);
@@ -241,8 +241,8 @@ const AdminOrders = () => {
                     <div className="live-order-box-1">
                       <span className="live-order-box-1-1">
                         {users[order.user] &&
-                        users[order.user].avatar &&
-                        users[order.user].avatar.url ? (
+                          users[order.user].avatar &&
+                          users[order.user].avatar.url ? (
                           <img
                             src={users[order.user].avatar.url}
                             alt={users[order.user].name}
@@ -328,11 +328,10 @@ const AdminOrders = () => {
                             <span className="d-flex items-center text-blue-600">
                               <Button
                                 variant="text"
-                                className={` ${
-                                  loadingButton
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
+                                className={` ${loadingButton
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                                  }`}
                                 onClick={() => handlePrintBill(order)}
                                 disabled={loadingButton}
                                 startIcon={
@@ -362,11 +361,10 @@ const AdminOrders = () => {
                             ) : (
                               <Button
                                 variant="contained"
-                                className={`bg-blue-500 text-white ${
-                                  loadingButton
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
+                                className={`bg-blue-500 text-white ${loadingButton
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                                  }`}
                                 onClick={() =>
                                   handleOrderStatusChange(
                                     order._id,

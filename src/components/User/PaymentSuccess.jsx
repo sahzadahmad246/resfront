@@ -25,6 +25,8 @@ const PaymentSuccess = () => {
   }, [status, reference, token]);
 
   const handleCreateOrder = (token) => {
+    console.log("orderInfo:", orderInfo);
+    console.log("cartItems:", cartItems);
     const order = {
       deliveryInfo: {
         location: {
@@ -49,15 +51,23 @@ const PaymentSuccess = () => {
       token,
     };
 
-    dispatch(createOrder(order));
-    localStorage.removeItem("cartItems");
+    dispatch(createOrder(order))
+      .then(() => {
+        // Clear session storage after successful order creation
+        localStorage.removeItem("shippingInfo");
+        sessionStorage.removeItem("orderInfo");
+        localStorage.removeItem("cartItems");
+      })
+      .catch(error => {
+        console.error("Error creating order:", error);
+      });
   };
 
   return (
     <div className="paymentSuccess-main">
       <IoIosCheckmarkCircleOutline size={90} color="green" />
-      <p>Wow! Order placed successful</p>
-      <span>Payment id {reference}</span>
+      <p>Wow! Order placed successfully</p>
+      <span>Payment ID: {reference}</span>
       <Link to="/account/orders">View Order</Link>
     </div>
   );

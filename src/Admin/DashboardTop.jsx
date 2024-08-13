@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./DashboardTop.css";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa";
-import { logout, clearErrors } from "../actions/userAction";
-import { Box, Button } from "@mui/material";
+import { logout } from "../actions/userAction";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Switch } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import { IoIosNotificationsOutline } from "react-icons/io";
-
+import { getOutletInfo, updateOutletInfo } from "../actions/adminAction";
 
 const Android12Switch = styled(Switch)(({ theme }) => ({
   padding: 8,
@@ -46,9 +44,22 @@ const Android12Switch = styled(Switch)(({ theme }) => ({
 
 const DashboardTop = () => {
   const { user } = useSelector((state) => state.user);
+  const { outlet } = useSelector((state) => state.getOutletInfo);
   const dispatch = useDispatch();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState("Open");
+
+  useEffect(() => {
+    dispatch(getOutletInfo());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (outlet) {
+      setIsOnline(outlet.outletStatus === "Open");
+    }
+  }, [outlet]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -59,7 +70,19 @@ const DashboardTop = () => {
   };
 
   const handleSwitchChange = (event) => {
-    setIsOnline(event.target.checked);
+    const status = event.target.checked ? "Open" : "Closed";
+    setNewStatus(status);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirm = () => {
+    dispatch(updateOutletInfo(outlet._id, { outletStatus: newStatus }));
+    setIsOnline(newStatus === "Open");
+    setConfirmDialogOpen(false);
+  };
+
+  const handleCancel = () => {
+    setConfirmDialogOpen(false);
   };
 
   return (
@@ -108,6 +131,26 @@ const DashboardTop = () => {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={handleCancel}
+      >
+        <DialogTitle>Confirm Status Change</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to change the outlet status to {newStatus}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

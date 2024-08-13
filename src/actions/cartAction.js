@@ -3,6 +3,7 @@ import {
   ADD_TO_CART,
   REMOVE_CART_ITEM,
   SAVE_SHIPPING_INFO,
+  LOAD_CART_ITEMS,
 } from "../constants/cartConstant";
 
 export const addItemsToCart = (id, quantity) => async (dispatch, getState) => {
@@ -42,4 +43,16 @@ export const saveShippingInfo = (data) => async (dispatch) => {
   });
 
   localStorage.setItem("shippingInfo", JSON.stringify(data));
+};
+
+// New action to load cart items
+export const loadCartItems = () => (dispatch) => {
+  const cartItems = localStorage.getItem("cartItems")
+    ? JSON.parse(localStorage.getItem("cartItems"))
+    : [];
+
+  dispatch({
+    type: LOAD_CART_ITEMS,
+    payload: cartItems,
+  });
 };

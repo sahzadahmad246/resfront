@@ -8,9 +8,9 @@ import AdminNav from "./AdminNav";
 import DashboardTop from "./DashboardTop";
 import "./AdminOrders.css";
 
-const UpdateOutletInfo = () => {
+const UpdateOutletInfo = ({ handleBack }) => {
   const dispatch = useDispatch();
-  const { error, loading, success } = useSelector((state) => state.updateOutletInfo);
+  const { error, loading, isUpdated } = useSelector((state) => state.updateOutletInfo);
   const { outlet: outletInfo } = useSelector((state) => state.getOutletInfo);
 
   const [outletName, setOutletName] = useState("");
@@ -37,12 +37,12 @@ const UpdateOutletInfo = () => {
       toast.error(error);
       dispatch(clearErrors());
     }
-    if (success) {
-      toast.success("Outlet information updated successfully!");
+    if (isUpdated) {
+      
       dispatch({ type: "UPDATE_OUTLET_INFO_RESET" });
     }
-    dispatch(getOutletInfo()); // Fetch outlet info on component mount
-  }, [dispatch, error, success]);
+    dispatch(getOutletInfo());
+  }, [dispatch, error, isUpdated]);
 
   useEffect(() => {
     if (outletInfo) {
@@ -103,7 +103,7 @@ const UpdateOutletInfo = () => {
     }
   };
 
-  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -127,7 +127,10 @@ const UpdateOutletInfo = () => {
       formData.append("outletLogo", outletLogo);
     }
 
-    await dispatch(updateOutletInfo(outletInfo._id, formData));
+    await dispatch(updateOutletInfo(outletInfo._id, formData)).then(() => {
+      handleBack(); 
+      toast.success("Outlet information updated successfully!");
+    });;
   };
 
   const handleLogoChange = (e) => {

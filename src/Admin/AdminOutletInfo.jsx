@@ -1,35 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "../Account/Profile.css";
+import { getOutletInfo, clearErrors } from "../actions/adminAction";
+import { toast } from "react-toastify";
 import AdminNav from "./AdminNav";
 import DashboardTop from "./DashboardTop";
-import { getOutletInfo, clearErrors, updateOutletInfo } from "../actions/adminAction";
-import UpdateOutletInfo from '../Admin/UpdateOutletInfo'
+import UpdateOutletInfo from './UpdateOutletInfo';
+import { IoMdTime } from "react-icons/io";
+import Loader from "../components/Layout/Loader";
+import { MdLocalPhone } from "react-icons/md";
+import { AiOutlineMail } from "react-icons/ai";
+import { CiShop, CiMail, CiPercent } from "react-icons/ci";
+import { BsHouse } from "react-icons/bs";
+import { IoBanOutline } from "react-icons/io5";
+import { SlNotebook } from "react-icons/sl";
 
 const AdminOutletInfo = () => {
   const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
 
-  const { loading, error, outlet } = useSelector(state => state.getOutletInfo);
-  const { user } = useSelector(
-    (state) => state.user
-  );
+  const { error, outlet, loading } = useSelector(state => state.getOutletInfo);
+  const { success } = useSelector(state => state.updateOutletInfo);
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getOutletInfo());
 
     if (error) {
-      alert(error);
+      toast.error(error);
       dispatch(clearErrors());
     }
-  }, [dispatch, error]);
+
+    if (success) {
+      setIsEditing(false);
+      toast.success("Outlet info updated successfully!");
+      dispatch({ type: 'UPDATE_OUTLET_INFO_RESET' });
+      dispatch(getOutletInfo());
+    }
+  }, [dispatch, error, success]);
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
+
   const handleBack = () => {
-    navigate(-1);
+    setIsEditing(false);
   };
+
   return (
     <div className="dashboard-main">
       <DashboardTop />
@@ -38,74 +54,83 @@ const AdminOutletInfo = () => {
           <AdminNav />
         </div>
         <div className="dashboard-right">
-          <div className="profile-right w-full">
-            <div className="account-top">
-              <span className="material-symbols-outlined" onClick={handleBack}>
-                arrow_back
-              </span>
-              <p>Profile</p>
-              <img src={outlet.outletLogo?.url} alt="outlet logo" />
-            </div>
-            {isEditing && <UpdateOutletInfo />}
-            <div className="profile-main">
-              <div className="profile-cover"></div>
-              <div className="pic-edit">
-                <img src={outlet.outletLogo?.url} className="preview" alt="Outlet logo" />
-                {isEditing ? (
-                  <></>
-                ) : (
-                  <>
+          {loading ? <Loader /> : <div className="profile-right w-full">
+            {isEditing ? (
+              <UpdateOutletInfo handleBack={handleBack} />
+            ) : (
+              <>
+                <div className="account-top">
+                  <span className="material-symbols-outlined" onClick={handleBack}>
+                    arrow_back
+                  </span>
+                  <p>Profile</p>
+                  <img src={outlet.outletLogo?.url} alt="outlet logo" />
+                </div>
+                <div className="profile-main">
+                  <div className="profile-cover"></div>
+                  <div className="pic-edit">
+                    <img src={outlet.outletLogo?.url} className="preview" alt="Outlet logo" />
                     <button onClick={handleEditClick}>Edit profile</button>
-                  </>
-                )}
-              </div>
+                  </div>
+                  <div className="profile-info">
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><CiShop size={30} /></span>
+                      <strong className="px-2">Outlet Name:</strong> {outlet.outletName}
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><MdLocalPhone size={30} /></span>
 
-              <div className="profile-info">
-                <p>
-                  <i className="px-2 fa-solid fa-user"></i>
-                  <strong>Outlet name: </strong> {outlet.outletName}
-                </p>
+                      <strong className="px-2">Phone:</strong> {user.phone}
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><MdLocalPhone size={30} /></span>
 
-                <p>
-                  <i className="px-2 fa-solid fa-phone"></i>
-                  <strong>Phone:</strong>{user && user.phone}
-                </p>
-                <p>
-                  <i className="px-2 fa-solid fa-phone"></i> <strong>Alt Phone: </strong>
-                  {outlet.altPhone}
-                </p>
-                <p>
-                  <i className="px-2 fa-solid fa-envelope"></i>
-                  <strong>Email: </strong>{user && user.email}
-                </p>
-                <p>
-                  <i className="px-2 fa-solid fa-percent"></i>
-                  <strong>GST: </strong>{outlet.gst}
-                </p>
-                <p>
-                  <i className="px-2 fa-solid fa-percent"></i>
-                  <strong>Tax:</strong> {outlet.taxPercent}%
-                </p>
+                      <strong className="px-2">Alt Phone:</strong> {outlet.altPhone}
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><CiMail size={30} /></span>
 
+                      <strong className="px-2">Email:</strong> {user.email}
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><CiPercent size={30} /></span>
 
+                      <strong className="px-2">GST:</strong> {outlet.gst}
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><CiPercent size={30} /></span>
 
-              </div>
-              <div className="border-indigo-600 m-4 p-3 bg-blue-50">
-                <p>
-                  <i className="px-2 fa-solid fa-home"></i>
-                  <strong>Address:</strong> {outlet.address}
-                </p>
-                <p>
-                  <i className="px-2 fa-solid fa-city"></i>
-                  <strong>Cancellation Policy:</strong> {outlet.cancellationPolicy}
-                </p>
-                <p>
-                  <i className="px-2 fa-solid fa-city"></i>
-                  <strong>Terms and Conditions:</strong> {outlet.termsAndConditions}
-                </p></div>
-            </div>
-          </div>
-          
+                      <strong className="px-2">Tax:</strong> {outlet.taxPercent}%
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><IoMdTime size={30} /></span>
+
+                      <strong className="px-2">Open Time:</strong> {outlet.openTime}
+                    </p>
+                    <p className="d-flex items-center">
+                      <span className="bg-blue-50 border rounded-lg m-1 p-1"><IoMdTime size={30} /></span>
+
+                      <strong className="px-2">Close Time:</strong> {outlet.closeTime}
+                    </p>
+                  </div>
+                  <div className="border-indigo-600 m-4 p-3 bg-blue-50">
+                    <p className="d-flex items-center">
+                      <BsHouse size={25} className="icon" />
+                      <strong className="px-2">Address:</strong> {outlet.address}
+                    </p>
+                    <p className="d-flex items-center">
+                      <IoBanOutline size={25} className="icon" />
+                      <strong className="px-2">Cancellation Policy:</strong> {outlet.cancellationPolicy}
+                    </p>
+                    <p className="d-flex items-center">
+                      <SlNotebook size={25} />
+                      <strong className="px-2">Terms and Conditions:</strong> {outlet.termsAndConditions}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>}
         </div>
       </div>
     </div>
