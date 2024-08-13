@@ -34,7 +34,7 @@ export const createOrder = (order) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:5000/api/v1/order/new",
+      "https://resback-ql89.onrender.com/api/v1/order/new",
       order,
       config
     );
@@ -64,7 +64,7 @@ export const createCODOrder = (order) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:5000/api/v1/cod/order",
+      "https://resback-ql89.onrender.com/api/v1/cod/order",
       order,
       config
     );
@@ -91,7 +91,7 @@ export const myOrders = () => async (dispatch) => {
     };
 
     const { data } = await axios.get(
-      "http://localhost:5000/api/v1/orders/me",
+      "https://resback-ql89.onrender.com/api/v1/orders/me",
       config
     );
 
@@ -115,7 +115,7 @@ export const getOrderDetails = (orderId) => async (dispatch) => {
       withCredentials: true,
     };
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/order/${orderId}`,
+      `https://resback-ql89.onrender.com/api/v1/order/${orderId}`,
       config
     );
 
@@ -141,7 +141,7 @@ export const getAllOrders = () => async (dispatch) => {
     };
 
     const { data } = await axios.get(
-      "http://localhost:5000/api/v1/admin/orders",
+      "https://resback-ql89.onrender.com/api/v1/admin/orders",
       config
     );
 
@@ -157,9 +157,6 @@ export const getAllOrders = () => async (dispatch) => {
   }
 };
 
-
-
-
 // Update order status action
 export const updateOrderStatus = (orderId, status) => async (dispatch) => {
   try {
@@ -173,7 +170,7 @@ export const updateOrderStatus = (orderId, status) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `http://localhost:5000/api/v1/admin/order/status/${orderId}`,
+      `https://resback-ql89.onrender.com/api/v1/admin/order/status/${orderId}`,
       { status },
       config
     );

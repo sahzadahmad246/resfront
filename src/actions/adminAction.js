@@ -47,7 +47,7 @@ export const getAllUsers = () => async (dispatch) => {
     };
 
     const { data } = await axios.get(
-      "http://localhost:5000/api/v1/admin/users",
+      "https://resback-ql89.onrender.com/api/v1/admin/users",
       config
     );
 
@@ -71,12 +71,11 @@ export const getSingleUser = (id) => async (dispatch) => {
       withCredentials: true,
     };
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/admin/user/${id}`,
+      `https://resback-ql89.onrender.com/api/v1/admin/user/${id}`,
       config
     );
 
     dispatch({
-      
       payload: { id, user: data.user },
       type: GET_SINGLE_USER_SUCCESS,
     });
@@ -88,8 +87,7 @@ export const getSingleUser = (id) => async (dispatch) => {
   }
 };
 
-
-// add new product (adimn)
+// Add new product (Admin)
 export const addNewProduct = (formData) => async (dispatch) => {
   try {
     dispatch({ type: ADD_NEW_PRODUCT_REQUEST });
@@ -102,7 +100,7 @@ export const addNewProduct = (formData) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:5000/api/v1/admin/products/new",
+      "https://resback-ql89.onrender.com/api/v1/admin/products/new",
       formData,
       config
     );
@@ -121,7 +119,7 @@ export const addNewProduct = (formData) => async (dispatch) => {
   }
 };
 
-// Update product (adimn)
+// Update product (Admin)
 export const updateProduct = (id, formData) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_PRODUCT_REQUEST });
@@ -134,7 +132,7 @@ export const updateProduct = (id, formData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `http://localhost:5000/api/v1/admin/products/${id}`,
+      `https://resback-ql89.onrender.com/api/v1/admin/products/${id}`,
       formData,
       config
     );
@@ -166,7 +164,7 @@ export const updateStock = (id, stockStatus) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `http://localhost:5000/api/v1/admin/product/stock/${id}`,
+      `https://resback-ql89.onrender.com/api/v1/admin/product/stock/${id}`,
       { stock: stockStatus },
       config
     );
@@ -193,7 +191,7 @@ export const deleteProduct = (id) => async (dispatch) => {
     };
 
     const { data } = await axios.delete(
-      `http://localhost:5000/api/v1/admin/products/${id}`,
+      `https://resback-ql89.onrender.com/api/v1/admin/products/${id}`,
       config
     );
 
@@ -222,7 +220,7 @@ export const addOutletInfo = (formData) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:5000/api/v1/admin/outlet-info",
+      "https://resback-ql89.onrender.com/api/v1/admin/outlet-info",
       formData,
       config
     );
@@ -254,7 +252,7 @@ export const updateOutletInfo = (id, formData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `http://localhost:5000/api/v1/admin/outlet-info/${id}`,
+      `https://resback-ql89.onrender.com/api/v1/admin/outlet-info/${id}`,
       formData,
       config
     );
@@ -273,8 +271,6 @@ export const updateOutletInfo = (id, formData) => async (dispatch) => {
   }
 };
 
-
-
 // Action for getting outlet information
 export const getOutletInfo = () => async (dispatch) => {
   try {
@@ -288,7 +284,7 @@ export const getOutletInfo = () => async (dispatch) => {
     };
 
     const { data } = await axios.get(
-      "/api/v1/admin/outlet-info",
+      "https://resback-ql89.onrender.com/api/v1/admin/outlet-info",
       config
     );
 

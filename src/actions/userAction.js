@@ -38,7 +38,7 @@ export const login = (formData) => async (dispatch) => {
   try {
     dispatch({ type: LOGIN_REQUEST });
     const { data } = await axios.post(
-      `/api/v1/login`,
+      `https://resback-ql89.onrender.com/api/v1/login`,
       { phone, password },
       {
         headers: { "Content-Type": "application/json" },
@@ -63,7 +63,7 @@ export const register = (formData) => async (dispatch) => {
       withCredentials: true,
     };
     const { data } = await axios.post(
-      `/api/v1/register`,
+      `https://resback-ql89.onrender.com/api/v1/register`,
       formData,
       config
     );
@@ -80,7 +80,7 @@ export const register = (formData) => async (dispatch) => {
 export const loadUser = () => async (dispatch) => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
-    const { data } = await axios.get(`/api/v1/me`, {
+    const { data } = await axios.get(`https://resback-ql89.onrender.com/api/v1/me`, {
       withCredentials: true,
     });
     dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
@@ -105,7 +105,7 @@ export const updateProfile = (userData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `/api/v1/profile/update`,
+      `https://resback-ql89.onrender.com/api/v1/profile/update`,
       userData,
       config
     );
@@ -131,7 +131,7 @@ export const updateAvatar = (formData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `/api/v1/avatar/update`,
+      `https://resback-ql89.onrender.com/api/v1/avatar/update`,
       formData,
       config
     );
@@ -158,7 +158,7 @@ export const updatePassword = (passwords) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `/api/v1/password/update`,
+      `https://resback-ql89.onrender.com/api/v1/password/update`,
       passwords,
       config
     );
@@ -186,7 +186,7 @@ export const forgotPassword = (email) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      `/api/v1/password/forgot`,
+      `https://resback-ql89.onrender.com/api/v1/password/forgot`,
       { email },
       config
     );
@@ -213,7 +213,7 @@ export const resetPassword = (token, password, confirmPassword) => async (dispat
     };
 
     const { data } = await axios.put(
-      `/api/v1/password/reset/${token}`,
+      `https://resback-ql89.onrender.com/api/v1/password/reset/${token}`,
       { password, confirmPassword },
       config
     );
@@ -231,7 +231,7 @@ export const resetPassword = (token, password, confirmPassword) => async (dispat
 // Logout Action
 export const logout = () => async (dispatch) => {
   try {
-    await axios.get(`/api/v1/logout`, {
+    await axios.get(`https://resback-ql89.onrender.com/api/v1/logout`, {
       withCredentials: true,
     });
     dispatch({ type: LOGOUT_SUCCESS });

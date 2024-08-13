@@ -8,7 +8,7 @@ import {
 
 export const addItemsToCart = (id, quantity) => async (dispatch, getState) => {
   const { data } = await axios.get(
-    `http://localhost:5000/api/v1/product/${id}`
+    `https://resback-ql89.onrender.com/api/v1/product/${id}`
   );
 
   dispatch({
