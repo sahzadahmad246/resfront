@@ -19,7 +19,7 @@ import {
 export const getProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCT_REQUEST });
-    const { data } = await axios.get("http://localhost:5000/api/v1/products");
+    const { data } = await axios.get("/api/v1/products");
 
     dispatch({
       type: ALL_PRODUCT_SUCCESS,
@@ -37,7 +37,7 @@ export const getProducts = () => async (dispatch) => {
 export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_ALL_PRODUCT_REQUEST });
-    const { data } = await axios.get("http://localhost:5000/api/v1/products");
+    const { data } = await axios.get("/api/v1/products");
 
     dispatch({
       type: ADMIN_ALL_PRODUCT_SUCCESS,
@@ -56,7 +56,7 @@ export const getProductsByCategory = (category) => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCT_REQUEST });
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/products/category/${category}`
+      `/api/v1/products/category/${category}`
     );
 
     dispatch({
