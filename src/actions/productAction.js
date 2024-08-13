@@ -76,7 +76,7 @@ export const getProductsBySubCategory = (subCategory) => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCT_REQUEST });
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/products/subcategory/${subCategory}`
+      `/api/v1/products/subcategory/${subCategory}`
     );
 
     dispatch({
@@ -96,7 +96,7 @@ export const getProductDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_DETAILS_REQUEST });
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/product/${id}`
+      `/api/v1/product/${id}`
     );
 
     dispatch({
@@ -124,7 +124,7 @@ export const newReview = (reviewData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      "http://localhost:5000/api/v1/review",
+      "/api/v1/review",
       reviewData,
       config
     );
