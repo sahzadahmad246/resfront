@@ -19,7 +19,7 @@ import {
 export const getProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCT_REQUEST });
-    const { data } = await axios.get("/api/v1/products");
+    const { data } = await axios.get("https://resback-ql89.onrender.com/api/v1/products");
 
     dispatch({
       type: ALL_PRODUCT_SUCCESS,
@@ -37,7 +37,7 @@ export const getProducts = () => async (dispatch) => {
 export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_ALL_PRODUCT_REQUEST });
-    const { data } = await axios.get("/api/v1/products");
+    const { data } = await axios.get("https://resback-ql89.onrender.com/api/v1/products");
 
     dispatch({
       type: ADMIN_ALL_PRODUCT_SUCCESS,
@@ -56,7 +56,7 @@ export const getProductsByCategory = (category) => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCT_REQUEST });
     const { data } = await axios.get(
-      `/api/v1/products/category/${category}`
+      `https://resback-ql89.onrender.com/api/v1/products/category/${category}`
     );
 
     dispatch({
@@ -76,7 +76,7 @@ export const getProductsBySubCategory = (subCategory) => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCT_REQUEST });
     const { data } = await axios.get(
-      `/api/v1/products/subcategory/${subCategory}`
+      `https://resback-ql89.onrender.com/api/v1/products/subcategory/${subCategory}`
     );
 
     dispatch({
@@ -96,7 +96,7 @@ export const getProductDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_DETAILS_REQUEST });
     const { data } = await axios.get(
-      `/api/v1/product/${id}`
+      `https://resback-ql89.onrender.com/api/v1/product/${id}`
     );
 
     dispatch({
@@ -124,7 +124,7 @@ export const newReview = (reviewData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      "/api/v1/review",
+      "https://resback-ql89.onrender.com/api/v1/review",
       reviewData,
       config
     );
