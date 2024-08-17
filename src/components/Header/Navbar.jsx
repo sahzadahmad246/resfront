@@ -84,12 +84,12 @@ const MobileNavbar = () => {
           ) : (
             <></>
           )}
-          <NavLink to="/cart">
+          <NavLink to="/cart" className="nav-item ">
             <IoCartOutline size={30} />
           </NavLink>
         </li>
         <li title="Account">
-          <NavLink className="nav-item" to="/account">
+          <NavLink className="nav-item " to="/account">
             <VscAccount size={30} />
           </NavLink>
         </li>

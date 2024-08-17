@@ -4,6 +4,7 @@
   justify-content: space-around;
   align-items: center;
 }
+
 .quick-status .quick-cart {
   width: 45%;
 }
@@ -13,6 +14,7 @@
   width: 45%;
   padding: 15px;
 }
+
 .homeBanner {
   display: none;
 }
@@ -23,6 +25,7 @@
   margin: 20px 0px;
   justify-content: space-around;
 }
+
 .category-item {
   width: 180px;
   height: 180px;
@@ -34,11 +37,13 @@
   justify-content: space-around;
   align-items: center;
 }
+
 .category-image {
   padding: 6px;
   background: #fff;
   border-radius: 50%;
 }
+
 .category-image img {
   width: 70px;
   height: 70px;
@@ -49,17 +54,17 @@
 .food-type-icon {
   width: 1110px;
 }
-/* Home.css */
+
 .random-products {
   padding: 20px;
   background-color: #f9f9f9;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  white-space: nowrap; /* Prevent wrapping of flex items */
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .product-grid {
   display: flex;
-  gap: 15px; /* Space between the product cards */
+  gap: 15px;
 }
 
 .product-card {
@@ -90,6 +95,7 @@
 .product-card p {
   color: #555;
 }
+
 @media only screen and (max-width: 767px) {
   .quick-status {
     margin: 0px 10px;
@@ -110,14 +116,42 @@
     margin: 3px 0px;
   }
 
+  .d-flex.flex-row {
+    margin: 10px 0;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-box input {
+    width: 85%;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .search-box span {
+    color: #888;
+  }
+
   .homeBanner {
     width: 100%;
     display: flex;
     justify-content: center;
+    margin-top: 10px;
   }
 
   .homeBanner img {
     width: 100%;
+    border-radius: 10px;
   }
 
   .categories-box {
