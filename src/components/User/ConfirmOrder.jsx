@@ -46,12 +46,12 @@ const ConfirmOrder = () => {
     try {
       const {
         data: { key },
-      } = await axios.get("http://localhost:5000/api/v1/getkey", config);
+      } = await axios.get("https://resback-ql89.onrender.com/api/v1/getkey", config);
 
       const {
         data: { order },
       } = await axios.post(
-        "http://localhost:5000/api/v1/process/payment",
+        "https://resback-ql89.onrender.com/api/v1/process/payment",
         { total },
         config
       );
@@ -64,7 +64,7 @@ const ConfirmOrder = () => {
         description: "For order from Thai Chilli China",
         image: "https://avatars.githubusercontent.com/u/124631079?s=400&v=4",
         order_id: order.id,
-        callback_url: "http://localhost:5000/api/v1/paymentVerification",
+        callback_url: "https://resback-ql89.onrender.com/api/v1/paymentVerification",
         prefill: {
           name: user.name,
           email: user.email,

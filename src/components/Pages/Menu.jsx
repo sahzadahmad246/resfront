@@ -107,7 +107,7 @@ const Menu = () => {
                   value={filters.category}
                   onChange={(e) => applyFilter("category", e.target.value)}
                 >
-                  <option value="">Cuisine</option>
+                  <option value="" className="bg-white">Cuisine</option>
                   {categories.map((category) => (
                     <option key={category} value={category}>
                       {category}
@@ -121,7 +121,7 @@ const Menu = () => {
                   value={filters.foodType}
                   onChange={(e) => applyFilter("foodType", e.target.value)}
                 >
-                  <option value="">Food Type</option>
+                  <option value="" className="bg-white">Food Type</option>
                   {foodTypes.map((foodType) => (
                     <option key={foodType} value={foodType}>
                       {foodType}
@@ -136,7 +136,7 @@ const Menu = () => {
                     applyFilter("priceRange", JSON.parse(e.target.value))
                   }
                 >
-                  <option value="">Price range</option>
+                  <option value="" className="bg-white">Price range</option>
                   {priceRanges.map((range) => (
                     <option
                       key={range.label}
@@ -152,7 +152,7 @@ const Menu = () => {
                   value={filters.subCategory}
                   onChange={(e) => applyFilter("subCategory", e.target.value)}
                 >
-                  <option value="">Category</option>
+                  <option value="" className="bg-white">Category</option>
                   {subCategories.map((subCategory) => (
                     <option key={subCategory} value={subCategory}>
                       {subCategory}
