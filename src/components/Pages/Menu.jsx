@@ -149,10 +149,11 @@ const Menu = () => {
               </div>
               <div className="filter-type">
                 <select
+                className=""
                   value={filters.subCategory}
                   onChange={(e) => applyFilter("subCategory", e.target.value)}
                 >
-                  <option value="" className="bg-white">Category</option>
+                  <option value="" >Category</option>
                   {subCategories.map((subCategory) => (
                     <option key={subCategory} value={subCategory}>
                       {subCategory}
