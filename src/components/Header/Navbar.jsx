@@ -7,16 +7,27 @@ import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
 import { GoHome } from "react-icons/go";
 import { VscAccount } from "react-icons/vsc";
-import QuickCart from "../Pages/QuickCart";
+import { CiLocationArrow1 } from "react-icons/ci";
+
 const DesktopNavbar = () => {
   const { user } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
-  console.log(cartItems);
+  const address = useSelector((state) => state.location.address);
+
   return (
     <header>
       <div className="logo-brand">
         <NavLink to="/">Thai Chilly China</NavLink>
       </div>
+
+      {address && (
+        <div className="quick-location-in-nav">
+          <span className="p-2 m-2 bg-gray-200 rounded-full">
+            <CiLocationArrow1 />
+          </span>
+          <span>{address.city || address.town || address.village}</span>
+        </div>
+      )}
       <nav>
         <ul className="text-centers">
           <li className=" active" title="Home">
@@ -112,7 +123,18 @@ const Navbar = () => {
     };
   }, []);
 
-  return <> {isMobile ? <><MobileNavbar /> </> : <DesktopNavbar />}</>;
+  return (
+    <>
+      {" "}
+      {isMobile ? (
+        <>
+          <MobileNavbar />{" "}
+        </>
+      ) : (
+        <DesktopNavbar />
+      )}
+    </>
+  );
 };
 
 export default Navbar;

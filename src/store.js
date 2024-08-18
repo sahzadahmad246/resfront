@@ -7,6 +7,7 @@ import {
 } from "./reducers/productReducer";
 import { forgotPasswordReducer, userReducer } from "./reducers/userReducer";
 import { cartReducer } from "./reducers/cartReducer";
+import locationReducer from "./reducers/otherReducer";
 import {
   newOrderReducer,
   allOrdersReducer,
@@ -21,7 +22,9 @@ import {
   singleUserReducer,
   updateProductReducer,
   updateStockReducer,
-  addOutletInfoReducer, updateOutletInfoReducer, getOutletInfoReducer,
+  addOutletInfoReducer,
+  updateOutletInfoReducer,
+  getOutletInfoReducer,
 } from "./reducers/adminReducer";
 import { updateOrderStatus } from "./actions/orderAction";
 const cartItems = localStorage.getItem("cartItems")
@@ -57,7 +60,8 @@ const store = configureStore({
     addOutletInfo: addOutletInfoReducer,
     updateOutletInfo: updateOutletInfoReducer,
     getOutletInfo: getOutletInfoReducer,
-    codOrder: codOrderReducer
+    codOrder: codOrderReducer,
+    location: locationReducer,
   },
   preloadedState: initialState,
 });

@@ -12,6 +12,8 @@ import { getOutletInfo } from "../../actions/adminAction";
 import { addItemsToCart } from "../../actions/cartAction";
 import QuickCart from "./QuickCart";
 import MetaData from "../Home/MetaData";
+import FetchLocation from "../User/FetchLocation"; // Import FetchLocation
+import { CiLocationArrow1 } from "react-icons/ci";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -20,9 +22,11 @@ const Home = () => {
   const { outlet } = useSelector((state) => state.getOutletInfo);
   const { cartItems } = useSelector((state) => state.cart);
   const { products, loading, error } = useSelector((state) => state.products);
+  const address = useSelector((state) => state.location.address);
 
   const [subCategories, setSubCategories] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
+  const [fetchingLocation, setFetchingLocation] = useState(true);
 
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
@@ -38,7 +42,6 @@ const Home = () => {
     if (products) {
       const subCategoryMap = {};
 
-      // Map subcategories to their respective images
       products.forEach((product) => {
         if (!subCategoryMap[product.subCategory]) {
           subCategoryMap[product.subCategory] = product;
@@ -48,23 +51,28 @@ const Home = () => {
       const uniqueSubCategories = Object.keys(subCategoryMap).map(
         (subCategory) => ({
           name: subCategory,
-          imageUrl: subCategoryMap[subCategory].images[0]?.url || homeBanner, // Fallback to homeBanner if no image
+          imageUrl: subCategoryMap[subCategory].images[0]?.url || homeBanner,
         })
       );
 
-      // Shuffle the subcategories array
       const shuffledSubCategories = uniqueSubCategories.sort(
         () => 0.5 - Math.random()
       );
 
-      // Set only the first 5 subcategories
       setSubCategories(shuffledSubCategories.slice(0, 5));
 
-      // Shuffle and set random products
       const shuffledProducts = products.sort(() => 0.5 - Math.random());
-      setRandomProducts(shuffledProducts.slice(0, 15)); // Display 15 random products
+      setRandomProducts(shuffledProducts.slice(0, 15));
     }
   }, [products]);
+
+  useEffect(() => {
+    if (!address || !address.lat || !address.lng) {
+      setFetchingLocation(true);
+    } else {
+      setFetchingLocation(false);
+    }
+  }, [address]);
 
   const handleAddToCart = (productId) => {
     dispatch(addItemsToCart(productId, 1));
@@ -80,14 +88,28 @@ const Home = () => {
       ) : (
         <div>
           <MetaData title={"Thai Chilli China"} />
-          <div className="d-flex flex-row">
+
+          {address && (
+            <div className="quick-location">
+              <span className="p-2 m-2 bg-gray-200 rounded-full">
+                <CiLocationArrow1 />
+              </span>
+              <span>
+                {address.neighbourhood || address.suburb}{" "}
+                {address.city || address.town || address.village}
+              </span>
+            </div>
+          )}
+
+          <div className="mobile-search">
             {isMobile && (
-              <Link to="/search" className="search-box w-full m-3">
+              <Link to="/search" className="search-box w-full">
                 <span className="material-symbols-outlined fs-2">search</span>
                 <input type="text" placeholder="search here" />
               </Link>
             )}
           </div>
+
           <div className="quick-status">
             <div
               className={`outlet-status rounded-lg text-center border ${
@@ -150,10 +172,10 @@ const Home = () => {
                       ) : null}
                     </span>
                   </Link>
-                  <span className="d-flex justify-between m-2">
+                  <span className="d-flex justify-between  items-center w-full">
                     <p className="fw-bold text-dark"> ₹{product.price}</p>
                     <button
-                      className="bg-danger px-3 rounded-lg text-white"
+                      className="random-add-btn bg-danger rounded-lg"
                       onClick={() => handleAddToCart(product._id)}
                     >
                       Add
@@ -163,6 +185,8 @@ const Home = () => {
               ))}
             </div>
           </div>
+
+          <FetchLocation style={{ display: 'none' }} />
         </div>
       )}
     </>

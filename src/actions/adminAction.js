@@ -295,7 +295,7 @@ export const getOutletInfo = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: GET_OUTLET_INFO_FAIL,
-      payload: error.response.data.message || "Something went wrong"
+      payload: error.response?.data.message || "Something went wrong"
     });
   }
 };
