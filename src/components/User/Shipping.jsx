@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Shipping.css";
 import { useSelector, useDispatch } from "react-redux";
 import { saveShippingInfo } from "../../actions/cartAction";
@@ -10,16 +10,34 @@ import { useNavigate } from "react-router-dom";
 const Shipping = () => {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
 
+  // Check if shipping info is available
+  const hasShippingInfo =
+    user &&
+    user.deliveryInfo &&
+    user.deliveryInfo.address &&
+    user.deliveryInfo.city &&
+    user.deliveryInfo.pincode &&
+    user.deliveryInfo.location &&
+    user.deliveryInfo.location.coordinates &&
+    user.deliveryInfo.location.coordinates.length === 2;
+
+  useEffect(() => {
+    if (!hasShippingInfo) {
+      setIsEditing(true);
+    }
+  }, [hasShippingInfo]);
+
   const handleEditClick = () => {
-    setIsEditing(!isEditing);
+    setIsEditing(true);
   };
 
   const handleEditToggle = () => {
     setIsEditing(false);
   };
+
   const shippingInfo = {
     phone: user && user.phone,
     address: user.deliveryInfo && user.deliveryInfo.address,
@@ -28,10 +46,18 @@ const navigate = useNavigate()
     longitude: user.deliveryInfo && user.deliveryInfo.location.coordinates[1],
     latitude: user.deliveryInfo && user.deliveryInfo.location.coordinates[0],
   };
+
   const handleContinue = () => {
     dispatch(saveShippingInfo(shippingInfo));
-    navigate("/order/confirm")
+    navigate("/order/confirm");
   };
+
+  // Determine if the "Continue" button should be disabled
+  const isContinueDisabled = !hasShippingInfo;
+
+  // Set button text based on the availability of shipping info
+  const buttonText = isContinueDisabled ? "Add Address" : "Continue";
+
   return (
     <>
       <MetaData title="Shipping details" />
@@ -86,7 +112,13 @@ const navigate = useNavigate()
                 <i className="fa-solid fa-circle-info"></i> Please check the
                 address carefully
               </h3>
-              <button onClick={handleContinue}>Continue</button>
+              <button
+                onClick={handleContinue}
+                disabled={isContinueDisabled}
+                className={isContinueDisabled ? "disabled" : ""}
+              >
+                {buttonText}
+              </button>
             </div>
           </div>
         )}

@@ -67,7 +67,7 @@ const Home = () => {
   }, [products]);
 
   useEffect(() => {
-    if (!address || !address.lat || !address.lng) {
+    if (!address || !address.city || !address.postcode) {
       setFetchingLocation(true);
     } else {
       setFetchingLocation(false);
@@ -90,14 +90,25 @@ const Home = () => {
           <MetaData title={"Thai Chilli China"} />
 
           {address && (
-            <div className="quick-location">
-              <span className="p-2 m-2 bg-gray-200 rounded-full">
-                <CiLocationArrow1 />
-              </span>
-              <span>
-                {address.neighbourhood || address.suburb}{" "}
-                {address.city || address.town || address.village}
-              </span>
+            <div className="location-status">
+              <div className="quick-location">
+                <span className="p-2 m-2 bg-gray-200 rounded-full">
+                  <CiLocationArrow1 />
+                </span>
+                <span>
+                  {address.neighbourhood || address.city || "Unknown locality"}{" "}
+                  {address.city || "Unknown city"}
+                </span>
+              </div>
+              <div
+                className={`outlet-status p-2 m-2 ${
+                  outlet.outletStatus === "Closed"
+                    ? "text-danger"
+                    : "text-success"
+                }`}
+              >
+                {outlet.outletStatus === "Closed" ? "Closed" : "Open Now"}
+              </div>
             </div>
           )}
 
@@ -110,21 +121,8 @@ const Home = () => {
             )}
           </div>
 
-          <div className="quick-status">
-            <div
-              className={`outlet-status rounded-lg text-center border ${
-                outlet.outletStatus === "Closed"
-                  ? "text-danger bg-red-100"
-                  : "text-success bg-green-100"
-              }`}
-            >
-              {outlet.outletStatus === "Closed"
-                ? `Restaurant is currently closed, (Timing 11:00 AM - 03:30 PM and 07:00 PM - 11:30 PM)`
-                : "Open Now"}
-            </div>
-            <div className="outlet-status">
-              {cartItems.length > 0 ? <QuickCart /> : null}
-            </div>
+          <div className="quick-cart">
+            {cartItems.length > 0 ? <QuickCart /> : null}
           </div>
           <Link to="/menu" className="homeBanner">
             <img src={homeBanner} alt="banner" />
@@ -186,7 +184,7 @@ const Home = () => {
             </div>
           </div>
 
-          <FetchLocation style={{ display: 'none' }} />
+          <FetchLocation />
         </div>
       )}
     </>

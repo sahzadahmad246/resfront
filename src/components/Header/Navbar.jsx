@@ -13,6 +13,7 @@ const DesktopNavbar = () => {
   const { user } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
   const address = useSelector((state) => state.location.address);
+  const { outlet } = useSelector((state) => state.getOutletInfo);
 
   return (
     <header>
@@ -20,17 +21,31 @@ const DesktopNavbar = () => {
         <NavLink to="/">Thai Chilly China</NavLink>
       </div>
 
-      {address && (
-        <div className="quick-location-in-nav">
-          <span className="p-2 m-2 bg-gray-200 rounded-full">
-            <CiLocationArrow1 />
-          </span>
-          <span>{address.city || address.town || address.village}</span>
+      <div className="location-status-in-nav">
+      
+        {address && (
+          <div className="quick-location-in-nav">
+            <span className="p-2 m-2 bg-gray-200 rounded-full">
+              <CiLocationArrow1 />
+            </span>
+            <span>
+              {address.neighbourhood ? `${address.neighbourhood}, ` : ""}
+              {address.city || "Unknown city"}
+            </span>
+          </div>
+        )}
+        <div
+          className={`p-2 m-2 ${
+            outlet.outletStatus === "Closed" ? "text-danger" : "text-success"
+          }`}
+        >
+          {outlet.outletStatus === "Closed" ? "Closed" : "Open Now"}
         </div>
-      )}
+      </div>
+
       <nav>
         <ul className="text-centers">
-          <li className=" active" title="Home">
+          <li className="active" title="Home">
             <NavLink exact to="/">
               <GoHome size={30} />
             </NavLink>
@@ -43,10 +58,7 @@ const DesktopNavbar = () => {
           <li title="Cart" className="desktop-cart">
             {cartItems && cartItems.length >= 1 ? (
               <span>{cartItems.length}</span>
-            ) : (
-              <></>
-            )}
-
+            ) : null}
             <NavLink to="/cart">
               <IoCartOutline size={30} />
             </NavLink>

@@ -42,18 +42,20 @@ const CartItemCard = ({ item }) => {
       <img src={item.image && item.image.url} alt={item.name} />
       <div className="item-info">
         <div>
-          <h1>{item.name}</h1>
+          <h4>{item.name}</h4>
           <span
-            className={item && item.stock < 1 ? "text-danger" : "text-success d-flex p-1" }
+            className={
+              item && item.stock < 1 ? "text-danger" : "text-success d-flex "
+            }
           >
             {item && item.stock < 1 ? "Out of Stock" : "In Stock"}{" "}
-            <div className="d-flex items-center px-1">
+            <div className="d-flex items-center px-2">
               <img src={foodTypeIcon} alt={item.foodType} />{" "}
-              <span>{item.foodType}</span>
+              <span className="px-1">{item.foodType}</span>
             </div>
           </span>
         </div>
-        <h1 className="text-danger">{`₹ ${item.price}`}</h1>
+        <h1 className="text-dark fw-bold">{`₹ ${item.price}`}</h1>
       </div>
 
       <div className="item-card-block-2">
@@ -61,8 +63,14 @@ const CartItemCard = ({ item }) => {
           <button onClick={() => decreaseQuantity(item.product, item.quantity)}>
             -
           </button>
-          <input readOnly value={item.quantity} type="number" />
+          <input
+            className="text-center "
+            readOnly
+            value={item.quantity}
+            type="number"
+          />
           <button
+            className="text-center "
             onClick={() =>
               increaseQuantity(item.product, item.quantity, item.stock)
             }
@@ -70,7 +78,10 @@ const CartItemCard = ({ item }) => {
             +
           </button>
         </div>
-        <button className="remove-btn" onClick={() => removeItem(item.product)}>
+        <button
+          className="remove-btn "
+          onClick={() => removeItem(item.product)}
+        >
           Remove
         </button>
       </div>

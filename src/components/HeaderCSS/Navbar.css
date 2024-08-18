@@ -9,10 +9,17 @@ header {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.quick-location-in-nav{
+.quick-location-in-nav {
   display: flex;
   align-items: center;
   padding: 0.2rem;
+}
+.location-status-in-nav {
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
 }
 .logo-brand a {
   font-size: 23px;
