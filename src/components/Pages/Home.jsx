@@ -12,7 +12,7 @@ import { getOutletInfo } from "../../actions/adminAction";
 import { addItemsToCart } from "../../actions/cartAction";
 import QuickCart from "./QuickCart";
 import MetaData from "../Home/MetaData";
-import FetchLocation from "../User/FetchLocation";
+import LocationPicker from "../User/LocationPicker"; // Import LocationPicker
 import { CiLocationArrow1 } from "react-icons/ci";
 import { CiUnlock, CiLock } from "react-icons/ci";
 import { haversineDistance } from "../User/haversineDistance";
@@ -106,7 +106,7 @@ const Home = () => {
   const handleNavigate = () => {
     if (outlet.location && outlet.location.coordinates) {
       const [lng, lat] = outlet.location.coordinates;
-      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lng},${lat}`;
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
       window.open(googleMapsUrl, "_blank");
     } else {
       toast.error("Outlet location not available.");
@@ -250,7 +250,7 @@ const Home = () => {
             </div>
           </div>
 
-          <FetchLocation />
+          <LocationPicker /> {/* Replace FetchLocation with LocationPicker */}
         </div>
       )}
     </>

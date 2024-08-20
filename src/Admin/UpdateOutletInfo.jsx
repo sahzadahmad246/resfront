@@ -2,24 +2,27 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TextField, Button, CircularProgress } from "@mui/material";
 import MetaData from "../components/Home/MetaData";
-import { getOutletInfo, updateOutletInfo, clearErrors } from "../actions/adminAction";
+import {
+  getOutletInfo,
+  updateOutletInfo,
+  clearErrors,
+} from "../actions/adminAction";
 import { toast } from "react-toastify";
 import AdminNav from "./AdminNav";
 import DashboardTop from "./DashboardTop";
+import LocationPicker from "../components/User/LocationPicker";
 import "./AdminOrders.css";
 
 const UpdateOutletInfo = ({ handleBack }) => {
   const dispatch = useDispatch();
-  const { error, loading, isUpdated } = useSelector((state) => state.updateOutletInfo);
+  const { error, loading, isUpdated } = useSelector(
+    (state) => state.updateOutletInfo
+  );
   const { outlet: outletInfo } = useSelector((state) => state.getOutletInfo);
+  const { location, address } = useSelector((state) => state.location);
 
   const [outletName, setOutletName] = useState("");
   const [altPhone, setAltPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [pincode, setPincode] = useState("");
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
   const [gst, setGst] = useState("");
   const [taxPercent, setTaxPercent] = useState("");
   const [termsAndConditions, setTermsAndConditions] = useState("");
@@ -30,7 +33,7 @@ const UpdateOutletInfo = ({ handleBack }) => {
   const [openTime, setOpenTime] = useState("");
   const [closeTime, setCloseTime] = useState("");
   const [closeReason, setCloseReason] = useState("");
-  const [locationLoading, setLocationLoading] = useState(false);
+  const [manualAddress, setManualAddress] = useState("");
 
   useEffect(() => {
     if (error) {
@@ -38,7 +41,6 @@ const UpdateOutletInfo = ({ handleBack }) => {
       dispatch(clearErrors());
     }
     if (isUpdated) {
-      
       dispatch({ type: "UPDATE_OUTLET_INFO_RESET" });
     }
     dispatch(getOutletInfo());
@@ -49,11 +51,6 @@ const UpdateOutletInfo = ({ handleBack }) => {
       setLogoPreview(outletInfo.outletLogo?.url || "");
       setOutletName(outletInfo.outletName || "");
       setAltPhone(outletInfo.altPhone || "");
-      setAddress(outletInfo.address || "");
-      setCity(outletInfo.city || "");
-      setPincode(outletInfo.pincode || "");
-      setLatitude(outletInfo.location?.coordinates[0] || "");
-      setLongitude(outletInfo.location?.coordinates[1] || "");
       setGst(outletInfo.gst || "");
       setTaxPercent(outletInfo.taxPercent || "");
       setTermsAndConditions(outletInfo.termsAndConditions || "");
@@ -65,56 +62,17 @@ const UpdateOutletInfo = ({ handleBack }) => {
     }
   }, [outletInfo]);
 
-  const handleLocationDetection = () => {
-    if ("geolocation" in navigator) {
-      setLocationLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=1b83cd97373249e09d149faa357a366b`
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.results && data.results.length > 0) {
-                const { postcode, city } = data.results[0].components;
-                setCity(city || "");
-                setPincode(postcode || "");
-                setLatitude(latitude);
-                setLongitude(longitude);
-              } else {
-                console.error("Location details not found");
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching location:", error);
-            })
-            .finally(() => {
-              setLocationLoading(false);
-            });
-        },
-        (error) => {
-          console.error("Error getting user location:", error.message);
-          setLocationLoading(false);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by your browser.");
-    }
-  };
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const formData = new FormData();
     formData.append("outletName", outletName);
     formData.append("altPhone", altPhone);
-    formData.append("address", address);
-    formData.append("city", city);
-    formData.append("pincode", pincode);
-    formData.append("latitude", latitude);
-    formData.append("longitude", longitude);
+    formData.append("address", manualAddress); // Manual address field
+    formData.append("city", location.city || "");
+    formData.append("pincode", location.pincode || "");
+    formData.append("latitude", location.lat);
+    formData.append("longitude", location.lng);
     formData.append("gst", gst);
     formData.append("taxPercent", taxPercent);
     formData.append("termsAndConditions", termsAndConditions);
@@ -128,9 +86,9 @@ const UpdateOutletInfo = ({ handleBack }) => {
     }
 
     await dispatch(updateOutletInfo(outletInfo._id, formData)).then(() => {
-      handleBack(); 
+      handleBack();
       toast.success("Outlet information updated successfully!");
-    });;
+    });
   };
 
   const handleLogoChange = (e) => {
@@ -206,42 +164,6 @@ const UpdateOutletInfo = ({ handleBack }) => {
           onChange={(e) => setAltPhone(e.target.value)}
         />
         <TextField
-          id="address"
-          name="address"
-          label="Address"
-          variant="outlined"
-          required
-          fullWidth
-          margin="normal"
-          placeholder="Enter address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <TextField
-          id="latitude"
-          name="latitude"
-          label="Latitude"
-          variant="outlined"
-          required
-          fullWidth
-          margin="normal"
-          placeholder="Enter latitude"
-          value={latitude}
-          onChange={(e) => setLatitude(e.target.value)}
-        />
-        <TextField
-          id="longitude"
-          name="longitude"
-          label="Longitude"
-          variant="outlined"
-          required
-          fullWidth
-          margin="normal"
-          placeholder="Enter longitude"
-          value={longitude}
-          onChange={(e) => setLongitude(e.target.value)}
-        />
-        <TextField
           id="gst"
           name="gst"
           label="GST Number"
@@ -291,6 +213,18 @@ const UpdateOutletInfo = ({ handleBack }) => {
           onChange={(e) => setCloseTime(e.target.value)}
         />
         <TextField
+          id="manual-address"
+          name="manual-address"
+          label="Address"
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+          placeholder="Enter address manually"
+          value={manualAddress}
+          onChange={(e) => setManualAddress(e.target.value)}
+        />
+        <TextField
           id="terms-and-conditions"
           name="terms-and-conditions"
           label="Terms and Conditions"
@@ -316,17 +250,7 @@ const UpdateOutletInfo = ({ handleBack }) => {
           value={cancellationPolicy}
           onChange={(e) => setCancellationPolicy(e.target.value)}
         />
-        <Button
-          variant="outlined"
-          className="detect-location-btn"
-          onClick={handleLocationDetection}
-          disabled={locationLoading}
-          endIcon={
-            locationLoading && <CircularProgress size={20} color="inherit" />
-          }
-        >
-          {locationLoading ? "Detecting..." : "Detect my location"}
-        </Button>
+        <LocationPicker />
         <Button
           type="submit"
           variant="contained"

@@ -11,13 +11,13 @@ import {
 import { toast } from "react-toastify";
 import "./UpdateProfile.css";
 import { useNavigate } from "react-router-dom";
-
+import LocationPicker from "./LocationPicker";
 const UpdateProfile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, loading, isUpdated, user } = useSelector(
-    (state) => state.user
-  );
+  const { error, loading, isUpdated, user } = useSelector((state) => state.user);
+  const { location } = useSelector((state) => state.location);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -45,51 +45,13 @@ const UpdateProfile = () => {
       setName(user.name);
       setPhone(user.phone);
       setEmail(user.email);
-      setAddress(user.deliveryInfo && user.deliveryInfo.address) ;
-      setCity( user.deliveryInfo && user.deliveryInfo.city);
-      setPincode(user.deliveryInfo && user.deliveryInfo.pincode);
-      setLatitude(user.deliveryInfo && user.deliveryInfo.location.coordinates[0]);
-      setLongitude( user.deliveryInfo && user.deliveryInfo.location.coordinates[1]);
+      setAddress(user.deliveryInfo?.address || "");
+      setCity(user.deliveryInfo?.city || "");
+      setPincode(user.deliveryInfo?.pincode || "");
+      setLatitude(location?.lat || user.deliveryInfo?.location?.coordinates[0] || "");
+      setLongitude(location?.lng || user.deliveryInfo?.location?.coordinates[1] || "");
     }
-  }, [dispatch, error, isUpdated]);
-
-  const handleLocationDetection = () => {
-    if ("geolocation" in navigator) {
-      setLocationLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=1b83cd97373249e09d149faa357a366b`
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.results && data.results.length > 0) {
-                const { postcode, city } = data.results[0].components;
-                setCity(city || "");
-                setPincode(postcode || "");
-                setLatitude(latitude);
-                setLongitude(longitude);
-              } else {
-                console.error("Location details not found");
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching location:", error);
-            })
-            .finally(() => {
-              setLocationLoading(false);
-            });
-        },
-        (error) => {
-          console.error("Error getting user location:", error.message);
-          setLocationLoading(false);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by your browser.");
-    }
-  };
+  }, [dispatch, error, isUpdated, user, location]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -101,14 +63,8 @@ const UpdateProfile = () => {
     formData.append("address", address);
     formData.append("city", city || user.deliveryInfo?.city || "");
     formData.append("pincode", pincode || user.deliveryInfo?.pincode || "");
-    formData.append(
-      "latitude",
-      latitude || user.deliveryInfo?.location?.coordinates[1] || ""
-    );
-    formData.append(
-      "longitude",
-      longitude || user.deliveryInfo?.location?.coordinates[0] || ""
-    );
+    formData.append("latitude", latitude || location.lat || user.deliveryInfo?.location?.coordinates[0] || "");
+    formData.append("longitude", longitude || location.lng || user.deliveryInfo?.location?.coordinates[1] || "");
 
     await dispatch(updateProfile(formData));
 
@@ -131,9 +87,15 @@ const UpdateProfile = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleLocationDetection = async () => {
+    setLocationLoading(true);
+    // Your location detection logic here
+    setLocationLoading(false);
+  };
+
   return (
     <div className="main-update-profile">
-    <MetaData title="Update profile" />
+      <MetaData title="Update profile" />
       <div className="update-profile-image">
         <img src={avatarPreview} alt="avatar" />
         <div className="file-input-wrapper">
@@ -256,7 +218,7 @@ const UpdateProfile = () => {
           onChange={(e) => setLongitude(e.target.value)}
         />
 
-        <Button
+        {/* <Button
           variant="outlined"
           className="detect-location-btn"
           onClick={handleLocationDetection}
@@ -266,7 +228,8 @@ const UpdateProfile = () => {
           }
         >
           {locationLoading ? "Detecting..." : "Detect my location"}
-        </Button>
+        </Button> */}
+        <LocationPicker />
 
         <Button
           type="submit"
