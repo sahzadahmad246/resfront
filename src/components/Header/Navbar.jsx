@@ -8,6 +8,7 @@ import { IoSearch } from "react-icons/io5";
 import { GoHome } from "react-icons/go";
 import { VscAccount } from "react-icons/vsc";
 import { CiLocationArrow1 } from "react-icons/ci";
+import { CiUnlock, CiLock } from "react-icons/ci";
 
 const DesktopNavbar = () => {
   const { user } = useSelector((state) => state.user);
@@ -22,7 +23,6 @@ const DesktopNavbar = () => {
       </div>
 
       <div className="location-status-in-nav">
-      
         {address && (
           <div className="quick-location-in-nav">
             <span className="p-2 m-2 bg-gray-200 rounded-full">
@@ -36,10 +36,18 @@ const DesktopNavbar = () => {
         )}
         <div
           className={`p-2 m-2 ${
-            outlet.outletStatus === "Closed" ? "text-danger" : "text-success"
+            outlet.outletStatus === "  Closed" ? "text-danger" : "text-success"
           }`}
         >
-          {outlet.outletStatus === "Closed" ? "Closed" : "Open Now"}
+          {outlet.outletStatus === "Closed" ? (
+            <span className=" d-flex items-center">
+              <CiLock size={25} /> Closed
+            </span>
+          ) : (
+            <span className="d-flex items-center">
+              <CiUnlock size={25} /> Open
+            </span>
+          )}
         </div>
       </div>
 

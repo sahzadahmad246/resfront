@@ -44,7 +44,7 @@ const SearchSuggetion = ({ product }) => {
         <h3 className="product-name">
           <Link to={`/product/${product._id}`}>
             <span className="product-name-price ">
-              <span className="fw-bold fs-5">{product.name}</span>
+              <span className="fw-bold fs-6">{product.name}</span>
               <img className="ps-1" src={foodTypeIcon} alt={product.foodType} />
             </span>
 
@@ -56,12 +56,18 @@ const SearchSuggetion = ({ product }) => {
         </h3>
         <div className="p-price-add-c">
           <span className="fw-bold">{`₹ ${product.price}`}</span>
-          <button
-            className="bg-danger px-2 text-white rounded-lg"
-            onClick={handleAddToCart}
-          >
-            ADD
-          </button>
+          {product.stock > 0 ? (
+  <button
+    className="bg-danger px-2 text-white rounded-lg"
+    onClick={handleAddToCart}
+  >
+    ADD
+  </button>
+) : (
+  <button className="bg-secondary px-2 text-white rounded-lg" disabled>
+    Out of Stock
+  </button>
+)}
         </div>
       </div>
     </div>

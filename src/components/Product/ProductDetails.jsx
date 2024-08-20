@@ -161,7 +161,7 @@ const ProductDetails = () => {
           <div className="product-details-right">
             <div className="details-block-2">
               <h1>
-                {products && products.name}{" "}
+                {products && products.name}
                 <span className="food-type-icon">
                   <img src={foodTypeIcon} alt="Food Type" />
                 </span>

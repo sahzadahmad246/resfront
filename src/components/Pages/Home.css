@@ -2,8 +2,19 @@
   display: none;
 }
 .quick-cart {
-  width: 45%;
+  width: 90%;
   margin: 1rem auto;
+  display: flex;
+  justify-content: space-around;
+}
+.delivery-status {
+  border: 1px solid #dddd;
+  padding: 13px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  width: 40%;
 }
 
 .outlet-status {
@@ -110,8 +121,13 @@
     margin: 0px auto;
     padding: 0.5rem;
     width: 100%;
+    display: flex;
+    flex-direction: column;
   }
-
+  .delivery-status {
+    margin-bottom: 15px;
+    width: unset;
+  }
   .d-flex.flex-row {
     margin: 10px 0;
   }

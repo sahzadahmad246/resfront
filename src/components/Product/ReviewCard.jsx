@@ -46,13 +46,13 @@ const ReviewCard = ({ review, openEditReviewDialog }) => {
   useEffect(() => {
     if (reviewError) {
       toast.error("Failed to submit review");
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     } else if (success) {
       // toast.success("Review submitted");
       setComment("");
       setRating(0);
       setOpen(false);
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   }, [reviewError, success]);
 
@@ -130,15 +130,16 @@ const ReviewCard = ({ review, openEditReviewDialog }) => {
         <br />
       </div>
       <div className="reviewBlock-2">
-        <span>{formatDate(review?.reviewDate)}</span> <br/>
+        <span>{formatDate(review?.reviewDate)}</span> <br />
         <Rating
           name="read-only-rating"
           value={review.rating}
           readOnly
           precision={0.5}
           size="small"
-        />
-        <p className="comment">{review.comment}</p>
+        />{" "}
+        <br />
+        <span className="comment">{review.comment}</span>
       </div>
     </>
   );

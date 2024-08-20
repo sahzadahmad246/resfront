@@ -118,6 +118,9 @@
     color: #504752;
     margin: 30px 0px;
   }
+  .details-block-2  .food-type-icon img{
+    width: 20px;
+  }
   
   .details-block-4 {
     border-top: 1px dashed #8a818c;

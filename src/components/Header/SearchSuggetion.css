@@ -62,7 +62,7 @@
 }
 .productCard:hover {
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1vmax);
+background: #f2f4f9;
 }
 @media (max-width: 768px) {
   .container > .see-all-btn {
@@ -97,7 +97,7 @@
     align-items: center;
     position: relative;
   }
-  .suggetion-card-left img{
+  .suggetion-card-left img {
     width: 90px;
     height: 90px;
   }

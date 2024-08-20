@@ -13,7 +13,7 @@ const Product = ({ product }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (product.foodType === "non-veg") {
+    if (product.foodType === "Non Veg") {
       setFoodTypeIcon(nonVegIcon);
     } else {
       setFoodTypeIcon(vegIcon);
@@ -44,10 +44,17 @@ const Product = ({ product }) => {
         <h3 className="product-name">
           <Link to={`/product/${product._id}`}>
             <span className="product-name-price">
-              <span className="fw-bold fs-5">{product.name}</span>
-              <img className="ps-1" src={foodTypeIcon} alt={product.foodType} />
+              <span className="fw-bold fs-6 d-flex justify-between items-center">
+                <span>{product.name}</span>
+                <img
+                  className="ps-1 w-1/12"
+                  src={foodTypeIcon}
+                  alt={product.foodType}
+                />
+              </span>
             </span>
           </Link>
+
           <div className="product-rating">
             <ReactStars {...options} />
             <span>({product.numOfReviews} Reviews)</span>
@@ -55,12 +62,18 @@ const Product = ({ product }) => {
         </h3>
         <div className="p-price-add-c">
           <span className="fw-bold">{`₹ ${product.price}`}</span>
-          <button
-            className="bg-danger px-2 text-white rounded-lg"
-            onClick={handleAddToCart}
-          >
-            ADD
-          </button>
+          {product.stock > 0 ? (
+            <button
+              className="bg-danger px-2 text-white rounded-lg"
+              onClick={handleAddToCart}
+            >
+              ADD
+            </button>
+          ) : (
+            <button className="bg-secondary px-2 text-white rounded-lg" disabled>
+              Out of Stock
+            </button>
+          )}
         </div>
       </div>
     </div>

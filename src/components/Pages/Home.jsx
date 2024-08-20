@@ -12,8 +12,10 @@ import { getOutletInfo } from "../../actions/adminAction";
 import { addItemsToCart } from "../../actions/cartAction";
 import QuickCart from "./QuickCart";
 import MetaData from "../Home/MetaData";
-import FetchLocation from "../User/FetchLocation"; // Import FetchLocation
+import FetchLocation from "../User/FetchLocation";
 import { CiLocationArrow1 } from "react-icons/ci";
+import { CiUnlock, CiLock } from "react-icons/ci";
+import { haversineDistance } from "../User/haversineDistance";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -23,10 +25,11 @@ const Home = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const { products, loading, error } = useSelector((state) => state.products);
   const address = useSelector((state) => state.location.address);
-
+  const location = useSelector((state) => state.location.location);
   const [subCategories, setSubCategories] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
   const [fetchingLocation, setFetchingLocation] = useState(true);
+  const [deliveryAvailable, setDeliveryAvailable] = useState(true);
 
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
@@ -74,9 +77,40 @@ const Home = () => {
     }
   }, [address]);
 
+  useEffect(() => {
+    if (location && outlet) {
+      const userLocation = {
+        lat: location.lat,
+        lng: location.lng,
+      };
+      const outletLocation = {
+        lat: outlet.location?.coordinates[0],
+        lng: outlet.location?.coordinates[1],
+      };
+
+      const distance = haversineDistance(userLocation, outletLocation);
+
+      if (distance > 6) {
+        setDeliveryAvailable(false);
+      } else {
+        setDeliveryAvailable(true);
+      }
+    }
+  }, [location, outlet]);
+
   const handleAddToCart = (productId) => {
     dispatch(addItemsToCart(productId, 1));
     toast.success("Item added to cart");
+  };
+
+  const handleNavigate = () => {
+    if (outlet.location && outlet.location.coordinates) {
+      const [lng, lat] = outlet.location.coordinates;
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lng},${lat}`;
+      window.open(googleMapsUrl, "_blank");
+    } else {
+      toast.error("Outlet location not available.");
+    }
   };
 
   return (
@@ -107,7 +141,15 @@ const Home = () => {
                     : "text-success"
                 }`}
               >
-                {outlet.outletStatus === "Closed" ? "Closed" : "Open Now"}
+                {outlet.outletStatus === "Closed" ? (
+                  <span className="d-flex items-center">
+                    <CiLock size={25} /> Closed
+                  </span>
+                ) : (
+                  <span className="d-flex items-center">
+                    <CiUnlock size={25} /> Open
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -122,6 +164,19 @@ const Home = () => {
           </div>
 
           <div className="quick-cart">
+            {!deliveryAvailable && (
+              <div className="delivery-status rounded-lg">
+                <span className="text-danger">
+                  Delivery not available for your location.
+                </span>
+                <button
+                  className="bg-success text-white px-2 py-1 rounded-lg"
+                  onClick={handleNavigate}
+                >
+                  Navigate us
+                </button>
+              </div>
+            )}
             {cartItems.length > 0 ? <QuickCart /> : null}
           </div>
           <Link to="/menu" className="homeBanner">
@@ -131,7 +186,9 @@ const Home = () => {
             {subCategories.map((subCategory) => (
               <Link
                 key={subCategory.name}
-                to={`/menu?subCategory=${encodeURIComponent(subCategory.name)}`}
+                to={`/menu?subCategory=${encodeURIComponent(
+                  subCategory.name
+                )}`}
                 className="category-item"
               >
                 <span className="category-image">
@@ -170,14 +227,23 @@ const Home = () => {
                       ) : null}
                     </span>
                   </Link>
-                  <span className="d-flex justify-between  items-center w-full">
-                    <p className="fw-bold text-dark"> ₹{product.price}</p>
-                    <button
-                      className="random-add-btn bg-danger rounded-lg"
-                      onClick={() => handleAddToCart(product._id)}
-                    >
-                      Add
-                    </button>
+                  <span className="d-flex justify-between items-center w-full">
+                    <p className="fw-bold text-dark">₹{product.price}</p>
+                    {product.stock > 0 ? (
+                      <button
+                        className="random-add-btn bg-danger rounded-lg"
+                        onClick={() => handleAddToCart(product._id)}
+                      >
+                        Add
+                      </button>
+                    ) : (
+                      <button
+                        className="random-add-btn bg-secondary rounded-lg"
+                        disabled
+                      >
+                        Out of Stock
+                      </button>
+                    )}
                   </span>
                 </div>
               ))}
