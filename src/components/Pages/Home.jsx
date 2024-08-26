@@ -76,13 +76,14 @@ const Home = () => {
         lat: location.lat,
         lng: location.lng,
       };
+  
       const outletLocation = {
-        lat: outlet.location?.coordinates[0],
-        lng: outlet.location?.coordinates[1],
+        lat: outlet.location?.coordinates[1], 
+        lng: outlet.location?.coordinates[0], 
       };
-
+  
       const distance = haversineDistance(userLocation, outletLocation);
-
+  
       if (distance > 6) {
         setDeliveryAvailable(false);
       } else {
@@ -90,6 +91,7 @@ const Home = () => {
       }
     }
   }, [location, outlet]);
+  
 
   const handleAddToCart = (productId) => {
     dispatch(addItemsToCart(productId, 1));

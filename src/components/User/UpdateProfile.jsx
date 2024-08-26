@@ -12,11 +12,17 @@ import { toast } from "react-toastify";
 import "./UpdateProfile.css";
 import { useNavigate } from "react-router-dom";
 import LocationPicker from "./LocationPicker";
+
 const UpdateProfile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, loading, isUpdated, user } = useSelector((state) => state.user);
-  const { location } = useSelector((state) => state.location);
+  const { error, loading, isUpdated, user } = useSelector(
+    (state) => state.user
+  );
+
+  const { location, address: reduxAddress } = useSelector(
+    (state) => state.location
+  );
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,6 +35,8 @@ const UpdateProfile = () => {
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [locationPickerKey, setLocationPickerKey] = useState(0);
 
   useEffect(() => {
     if (error) {
@@ -46,12 +54,16 @@ const UpdateProfile = () => {
       setPhone(user.phone);
       setEmail(user.email);
       setAddress(user.deliveryInfo?.address || "");
-      setCity(user.deliveryInfo?.city || "");
+      setCity(reduxAddress?.city || user.deliveryInfo?.city || "");
       setPincode(user.deliveryInfo?.pincode || "");
-      setLatitude(location?.lat || user.deliveryInfo?.location?.coordinates[0] || "");
-      setLongitude(location?.lng || user.deliveryInfo?.location?.coordinates[1] || "");
+      setLatitude(
+        location?.lat || user.deliveryInfo?.location?.coordinates[0] || ""
+      );
+      setLongitude(
+        location?.lng || user.deliveryInfo?.location?.coordinates[1] || ""
+      );
     }
-  }, [dispatch, error, isUpdated, user, location]);
+  }, [dispatch, error, isUpdated, user, location, reduxAddress]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -63,8 +75,14 @@ const UpdateProfile = () => {
     formData.append("address", address);
     formData.append("city", city || user.deliveryInfo?.city || "");
     formData.append("pincode", pincode || user.deliveryInfo?.pincode || "");
-    formData.append("latitude", latitude || location.lat || user.deliveryInfo?.location?.coordinates[0] || "");
-    formData.append("longitude", longitude || location.lng || user.deliveryInfo?.location?.coordinates[1] || "");
+    formData.append(
+      "latitude",
+      latitude || location.lat || user.deliveryInfo?.location?.coordinates[0] || ""
+    );
+    formData.append(
+      "longitude",
+      longitude || location.lng || user.deliveryInfo?.location?.coordinates[1] || ""
+    );
 
     await dispatch(updateProfile(formData));
 
@@ -87,10 +105,9 @@ const UpdateProfile = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleLocationDetection = async () => {
-    setLocationLoading(true);
-    // Your location detection logic here
-    setLocationLoading(false);
+  const handleDetectLocation = () => {
+    setLocationPickerKey((prevKey) => prevKey + 1); // Update key to force re-render
+    setShowLocationPicker(true);
   };
 
   return (
@@ -197,7 +214,7 @@ const UpdateProfile = () => {
           label="Latitude"
           variant="outlined"
           required
-          readonly
+          readOnly
           fullWidth
           margin="normal"
           placeholder="Enter your latitude"
@@ -210,7 +227,7 @@ const UpdateProfile = () => {
           label="Longitude"
           variant="outlined"
           required
-          readonly
+          readOnly
           fullWidth
           margin="normal"
           placeholder="Enter your longitude"
@@ -218,18 +235,11 @@ const UpdateProfile = () => {
           onChange={(e) => setLongitude(e.target.value)}
         />
 
-        {/* <Button
-          variant="outlined"
-          className="detect-location-btn"
-          onClick={handleLocationDetection}
-          disabled={locationLoading}
-          endIcon={
-            locationLoading && <CircularProgress size={20} color="inherit" />
-          }
-        >
-          {locationLoading ? "Detecting..." : "Detect my location"}
-        </Button> */}
-        <LocationPicker />
+        <Button onClick={handleDetectLocation} variant="contained">
+          Detect Location
+        </Button>
+
+        {showLocationPicker && <LocationPicker key={locationPickerKey} />}
 
         <Button
           type="submit"
