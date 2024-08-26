@@ -1,4 +1,4 @@
-import { SET_ADDRESS, SET_LOCATION } from "../constants/otherConstant";
+import { SET_LOCATION, SET_ADDRESS } from "../constants/otherConstant";
 
 // Action to set location
 export const setLocation = (location) => ({

@@ -13,7 +13,7 @@ import { CiUnlock, CiLock } from "react-icons/ci";
 const DesktopNavbar = () => {
   const { user } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
-  const address = useSelector((state) => state.location.address);
+  const { location, address } = useSelector((state) => state.location);
   const { outlet } = useSelector((state) => state.getOutletInfo);
 
   return (
@@ -29,7 +29,7 @@ const DesktopNavbar = () => {
               <CiLocationArrow1 />
             </span>
             <span>
-              {address.neighbourhood ? `${address.neighbourhood}, ` : ""}
+              {address.neighborhood || "Unknown city"},{" "}
               {address.city || "Unknown city"}
             </span>
           </div>

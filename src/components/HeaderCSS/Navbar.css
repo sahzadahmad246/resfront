@@ -15,11 +15,10 @@ header {
   padding: 0.2rem;
 }
 .location-status-in-nav {
-  width: 30%;
+  width: 40%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
 }
 .logo-brand a {
   font-size: 23px;

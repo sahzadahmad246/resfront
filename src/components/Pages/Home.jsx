@@ -12,7 +12,7 @@ import { getOutletInfo } from "../../actions/adminAction";
 import { addItemsToCart } from "../../actions/cartAction";
 import QuickCart from "./QuickCart";
 import MetaData from "../Home/MetaData";
-import LocationPicker from "../User/LocationPicker"; // Import LocationPicker
+import LocationPicker from "../User/LocationPicker"; 
 import { CiLocationArrow1 } from "react-icons/ci";
 import { CiUnlock, CiLock } from "react-icons/ci";
 import { haversineDistance } from "../User/haversineDistance";
@@ -24,8 +24,7 @@ const Home = () => {
   const { outlet } = useSelector((state) => state.getOutletInfo);
   const { cartItems } = useSelector((state) => state.cart);
   const { products, loading, error } = useSelector((state) => state.products);
-  const address = useSelector((state) => state.location.address);
-  const location = useSelector((state) => state.location.location);
+  const { location, address } = useSelector((state) => state.location);
   const [subCategories, setSubCategories] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
   const [fetchingLocation, setFetchingLocation] = useState(true);
@@ -34,7 +33,7 @@ const Home = () => {
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
     dispatch(getProducts());
-
+    console.log("data from redux", location, address);
     if (error) {
       toast.error(error);
       dispatch(clearErrors());
@@ -69,13 +68,7 @@ const Home = () => {
     }
   }, [products]);
 
-  useEffect(() => {
-    if (!address || !address.city || !address.postcode) {
-      setFetchingLocation(true);
-    } else {
-      setFetchingLocation(false);
-    }
-  }, [address]);
+
 
   useEffect(() => {
     if (location && outlet) {
@@ -130,8 +123,9 @@ const Home = () => {
                   <CiLocationArrow1 />
                 </span>
                 <span>
-                  {address.neighbourhood || address.city || "Unknown locality"}{" "}
-                  {address.city || "Unknown city"}
+                  {address.neighborhood  || "Unknown locality"}, {""}
+                  {address.city  || "Unknown city"}
+                 
                 </span>
               </div>
               <div
@@ -186,9 +180,7 @@ const Home = () => {
             {subCategories.map((subCategory) => (
               <Link
                 key={subCategory.name}
-                to={`/menu?subCategory=${encodeURIComponent(
-                  subCategory.name
-                )}`}
+                to={`/menu?subCategory=${encodeURIComponent(subCategory.name)}`}
                 className="category-item"
               >
                 <span className="category-image">
@@ -250,7 +242,7 @@ const Home = () => {
             </div>
           </div>
 
-          <LocationPicker /> {/* Replace FetchLocation with LocationPicker */}
+          <LocationPicker />
         </div>
       )}
     </>

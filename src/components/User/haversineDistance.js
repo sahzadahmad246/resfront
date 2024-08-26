@@ -1,4 +1,4 @@
-// utils/haversineDistance.js
+
 export const haversineDistance = (coord1, coord2) => {
     const toRad = (value) => (value * Math.PI) / 180;
   
@@ -7,7 +7,7 @@ export const haversineDistance = (coord1, coord2) => {
     const lat2 = toRad(coord2.lat);
     const lon2 = toRad(coord2.lng);
   
-    const R = 6371; // Radius of the Earth in km
+    const R = 6371; 
     const dLat = lat2 - lat1;
     const dLon = lon2 - lon1;
     
