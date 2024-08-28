@@ -25,7 +25,7 @@ const LocationPicker = () => {
           (position) => {
             const { latitude, longitude } = position.coords;
             const coords = { lat: latitude, lng: longitude };
-            dispatch(setLocation(coords)); // Dispatch location
+            dispatch(setLocation(coords)); 
 
             fetch(
               `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=1b83cd97373249e09d149faa357a366b`

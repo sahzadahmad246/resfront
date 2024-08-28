@@ -18,7 +18,7 @@ const Cart = () => {
 
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
-    dispatch(loadCartItems()); // Load cart items from local storage
+    dispatch(loadCartItems());
   }, [dispatch]);
 
   const subtotal = cartItems.reduce((acc, curr) => {
@@ -31,7 +31,9 @@ const Cart = () => {
 
   const deliveryCharge = subtotal > 500 ? 0 : 40;
   const discount = 10;
-  const total = subtotal + deliveryCharge - discount;
+  const tax = (subtotal * outlet.taxPercent) / 100;
+  console.log(tax);
+  const total = subtotal + deliveryCharge + tax - discount;
 
   const handlePlaceOrder = () => {
     navigate("/login?redirect=shipping");
@@ -54,6 +56,10 @@ const Cart = () => {
                 <h2>{`₹${subtotal}`}</h2>
               </div>
               <div className="price-info">
+                <h2>GST @5%</h2>
+                <h2>{`₹${tax}`}</h2>
+              </div>
+              <div className="price-info">
                 <h2>Delivery Charge</h2>
                 <h2>
                   {deliveryCharge === 0 ? (
@@ -66,9 +72,9 @@ const Cart = () => {
                   )}
                 </h2>
               </div>
-              <div className="price-info">
+              <div className="price-info text-success">
                 <h2>Discount</h2>
-                <h2>{`₹${discount}`}</h2>
+                <h2>{`- ₹${discount}`}</h2>
               </div>
             </div>
             <div className="price-info">

@@ -27,6 +27,8 @@ import {
   getOutletInfoReducer,
 } from "./reducers/adminReducer";
 import { updateOrderStatus } from "./actions/orderAction";
+import { couponCreateReducer } from "./reducers/couponReducer";
+
 const cartItems = localStorage.getItem("cartItems")
   ? JSON.parse(localStorage.getItem("cartItems"))
   : [];
@@ -62,6 +64,7 @@ const store = configureStore({
     getOutletInfo: getOutletInfoReducer,
     codOrder: codOrderReducer,
     location: locationReducer,
+    couponCreate: couponCreateReducer,
   },
   preloadedState: initialState,
 });
