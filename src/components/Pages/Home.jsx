@@ -84,7 +84,7 @@ const Home = () => {
   
       const distance = haversineDistance(userLocation, outletLocation);
   
-      if (distance > 6) {
+      if (distance > 1) {
         setDeliveryAvailable(false);
       } else {
         setDeliveryAvailable(true);
