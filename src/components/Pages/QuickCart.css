@@ -23,6 +23,7 @@
     align-items: center;
     justify-content: space-between;
     min-height: 40px;
+    border: 1px solid red;
   }
   .main-q-cart img {
     width: 60px;

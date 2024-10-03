@@ -1,28 +1,55 @@
-import React, { useState } from "react";
-import CheckoutSteps from "./CheckoutSteps";
-import "./ConfirmOrder.css";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CircularProgress } from "@mui/material";
+import {
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from "@mui/material";
 import { createOrder } from "../../actions/orderAction";
+import { redeemCoupon } from "../../actions/couponAction";
+import CheckoutSteps from "./CheckoutSteps";
 
-const ConfirmOrder = () => {
+export default function ConfirmOrder() {
   const { user } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
+  const { outlet } = useSelector((state) => state.getOutletInfo);
+  const {
+    loading: redeeming,
+    discount: couponValue,
+    success: redeemed,
+    error: redeemError,
+  } = useSelector((state) => state.couponRedeem);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
 
   const subtotal = Math.round(
     cartItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0)
   );
-  console.log("subtotl", subtotal)
   const totalQuantity = cartItems.reduce((acc, curr) => acc + curr.quantity, 0);
   const deliveryCharge = subtotal > 500 ? 0 : 40;
-  const discount = 10;
+  const discount = couponValue || 0;
   const gst = Math.round(subtotal * 0.05); // 5% GST
   const total = Math.round(subtotal + deliveryCharge - discount + gst);
+
+  useEffect(() => {
+    if (redeemed) {
+      setOpenDialog(false);
+    }
+  }, [redeemed]);
+
+  const handleApplyCoupon = () => {
+    dispatch(redeemCoupon(couponCode, subtotal));
+  };
 
   const proceedToPay = async () => {
     setLoading(true);
@@ -46,7 +73,10 @@ const ConfirmOrder = () => {
     try {
       const {
         data: { key },
-      } = await axios.get("https://resback-ql89.onrender.com/api/v1/getkey", config);
+      } = await axios.get(
+        "https://resback-ql89.onrender.com/api/v1/getkey",
+        config
+      );
 
       const {
         data: { order },
@@ -64,7 +94,8 @@ const ConfirmOrder = () => {
         description: "For order from Thai Chilli China",
         image: "https://avatars.githubusercontent.com/u/124631079?s=400&v=4",
         order_id: order.id,
-        callback_url: "https://resback-ql89.onrender.com/api/v1/paymentVerification",
+        callback_url:
+          "https://resback-ql89.onrender.com/api/v1/paymentVerification",
         prefill: {
           name: user.name,
           email: user.email,
@@ -101,118 +132,176 @@ const ConfirmOrder = () => {
   };
 
   return (
-    <>
-      <div className="checkout-stepper">
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
         <CheckoutSteps activeStep={1} />
       </div>
-      <div className="confirm-order-main">
-        <div className="confirm-order-left">
-          <div className="confirm-shipping-info">
-            <div className="shipping-info-top">
-              <h1>Delivering to</h1>
-            </div>
-
-            <div className="shipping-info-main">
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="space-y-8">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4">Delivering to</h2>
+            <div className="space-y-2">
               <p>
-                <i className="px-2 fa-solid fa-user"></i>
+                <i className="fas fa-user mr-2"></i>
                 {user && user.name}
               </p>
-
               <p>
-                <i className="px-2 fa-solid fa-phone"></i>
+                <i className="fas fa-phone mr-2"></i>
                 {user && user.phone}
               </p>
               <p>
-                <i className="px-2 fa-solid fa-envelope"></i>
+                <i className="fas fa-envelope mr-2"></i>
                 {user && user.email}
               </p>
               <p>
-                <i className="px-2 fa-solid fa-home"></i>
-                {(user.deliveryInfo && user.deliveryInfo.address) ||
-                  "No address found"}
+                <i className="fas fa-home mr-2"></i>
+                {user?.deliveryInfo?.address || "No address found"}
               </p>
               <p>
-                <i className="px-2 fa-solid fa-city"></i>
-                {(user.deliveryInfo && user.deliveryInfo.city) ||
-                  "No city found"}
+                <i className="fas fa-city mr-2"></i>
+                {user?.deliveryInfo?.city || "No city found"}
               </p>
               <p>
-                <i className="px-2 fa-brands fa-usps"></i>
-                {(user.deliveryInfo && user.deliveryInfo.pincode) ||
-                  "No pincode found"}
+                <i className="fas fa-map-pin mr-2"></i>
+                {user?.deliveryInfo?.pincode || "No pincode found"}
               </p>
             </div>
           </div>
-          <div className="confirm-cartItem-info">
-            <h1>Items in your cart</h1>
-            <div className="confirm-cartItem">
-              {cartItems &&
-                cartItems.map((item) => (
-                  <div key={item.product} className="cartItem-in-confirm">
-                    <div className="name-img-in-confirm">
-                      <img src={item.image.url} alt={item.name} />
-                      <Link to={`/product/${item.product}`}>{item.name}</Link>
-                    </div>
-                    <span>
-                      {item.quantity} X {item.price} =
-                      <b> {item.price * item.quantity}</b>
-                    </span>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4">Items in your cart</h2>
+            <div className="space-y-4">
+              {cartItems.map((item) => (
+                <div
+                  key={item.product}
+                  className="flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={item.image.url}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <Link
+                      to={`/product/${item.product}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {item.name}
+                    </Link>
                   </div>
-                ))}
+                  <span>
+                    {item.quantity} x ₹{item.price} ={" "}
+                    <b>₹{item.price * item.quantity}</b>
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-        <div className="confirm-order-right">
-          <div className="order-summary">
-            <h1>Order summary</h1>
-            <div className="price-info">
-              <h2>Subtotal ({totalQuantity} items)</h2>
-              <h2>{`₹${subtotal}`}</h2>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-2xl font-bold mb-6">Price Details</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Subtotal ({totalQuantity} items)</span>
+              <span>₹{subtotal}</span>
             </div>
-            <div className="price-info">
-              <h2>Delivery Charge</h2>
-              <h2>
+            <div className="flex justify-between">
+              <span>GST @5%</span>
+              <span className="text-danger"> + ₹{gst}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Delivery Charge</span>
+              <span>
                 {deliveryCharge === 0 ? (
                   <>
-                    <span className="line-through">₹40</span>{" "}
-                    <span className="text-success">FREE</span>
+                    <span className="line-through">₹40</span>
+                    <span className="text-success"> FREE</span>
                   </>
                 ) : (
                   `₹${deliveryCharge}`
                 )}
-              </h2>
+              </span>
             </div>
-            <div className="price-info">
-              <h2>GST @5%</h2>
-              <h2>{`₹${gst}`}</h2>
+            <div className="flex justify-between">
+              <span>Discount</span>
+              <span className="text-success">- ₹{discount}</span>
             </div>
-            <div className="price-info">
-              <h2>Discount</h2>
-              <h2>{`₹${discount}`}</h2>
+            {redeemed ? (
+              <div className="flex justify-between">
+                <span className="text-success">
+                  you have redeemed this coupon successfully
+                </span>
+                <span className="text-green-700 cursor-pointer   px-2">
+                  Coupon applied 🎉
+                </span>
+              </div>
+            ) : (
+              <div
+                className="flex justify-between "
+                onClick={() => setOpenDialog(true)}
+              >
+                <span></span>
+                <span className="text-green-700 cursor-pointer border border-green-600 px-2">
+                  Apply Coupon
+                </span>
+              </div>
+            )}
+            <button className=" text-black p-2 border-green-200 rounded  "></button>
+            <div className="flex justify-between font-bold text-lg">
+              <span>Total</span>
+              <span>₹{total}</span>
             </div>
-            <div className="total-price-info">
-              <h2 className="font-bold">Grand Total</h2>
-              <h2 className="font-bold">{`₹${total}`}</h2>
+          </div>
+          <div className="mt-6 space-y-4">
+            <div className="mt-6 space-y-4">
+              <button
+                onClick={proceedToPay}
+                disabled={loading}
+                className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-300 disabled:opacity-50"
+              >
+                {loading ? <CircularProgress size={25} /> : "Pay now"}
+              </button>
+
+              <button
+                onClick={total <= 1000 ? placeCODOrder : null}
+                disabled={loading}
+                className={`w-full py-2 px-4 rounded transition duration-300 ${
+                  total > 1000
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-yellow-600 text-white hover:bg-yellow-700"
+                }`}
+              >
+                {total > 1000 ? (
+                  "Cash on delivery not available"
+                ) : loading ? (
+                  <CircularProgress size={25} />
+                ) : (
+                  "Cash on delivery"
+                )}
+              </button>
             </div>
-            <button
-              className="proceed-to-pay"
-              onClick={proceedToPay}
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={24} /> : `Pay  ₹${total} Online`}
-            </button>
-            <button
-              className="proceed-to-pay bg-success"
-              onClick={placeCODOrder}
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={24} /> : `Pay  ₹${total} on delivery`}
-            </button>
           </div>
         </div>
       </div>
-    </>
-  );
-};
 
-export default ConfirmOrder;
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Apply Coupon</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Coupon Code"
+            variant="outlined"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            fullWidth
+          />
+        </DialogContent>
+        <div className="pl-2 text-danger">{redeemError}</div>
+        <DialogActions>
+          <Button onClick={handleApplyCoupon} disabled={redeeming}>
+            {redeeming ? <CircularProgress size={25} /> : "Apply"}
+          </Button>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}

@@ -26,6 +26,7 @@ import NewOrderPopup from "./NewOrderPopup";
 import OrderStatusStepper from "./OrderStatusStepper";
 import OrderBill from "./OrderBill";
 import Loader from "../components/Layout/Loader";
+import io from "socket.io-client"; 
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { error, orders, loading } = useSelector((state) => state.allOrders);
@@ -40,6 +41,43 @@ const AdminOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [socket, setSocket] = useState(null); // State for socket connection
+
+  useEffect(() => {
+    // Initialize Socket.IO
+    const newSocket = io("http://localhost:5000"); // Change to your backend URL
+    setSocket(newSocket);
+
+    // Listen for order updates
+    newSocket.on("orders", (orders) => {
+      setFilteredOrders(orders); // Update the orders on initial load
+    });
+
+    newSocket.on("orderUpdated", (updatedOrder) => {
+      setFilteredOrders((prevOrders) => {
+        // Find and update the specific order in the list
+        return prevOrders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        );
+      });
+    });
+
+    return () => {
+      newSocket.disconnect(); // Cleanup on unmount
+    };
+  }, []);
+
+  useEffect(() => {
+    // Dispatch action to fetch initial orders
+    dispatch(getAllOrders());
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Handle errors and loading states as necessary
+    if (error) {
+      dispatch(clearErrors());
+    }
+  }, [error, dispatch]);
 
   useEffect(() => {
     const fetchOrders = () => {
@@ -93,7 +131,9 @@ const AdminOrders = () => {
       let filtered = [...orders];
 
       if (activeStatus !== "All") {
-        filtered = filtered.filter((order) => order.orderStatus === activeStatus);
+        filtered = filtered.filter(
+          (order) => order.orderStatus === activeStatus
+        );
       }
 
       if (searchTerm.trim() !== "") {
@@ -111,14 +151,15 @@ const AdminOrders = () => {
       }
 
       // Sort orders in descending order based on creation date
-      filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      filtered = filtered.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
 
       setFilteredOrders(filtered);
     };
 
     filterOrders();
   }, [searchTerm, orders, users, activeStatus]);
-
 
   const handleOrderStatusChange = (orderId, currentStatus) => {
     setLoadingButton(true);
@@ -241,8 +282,8 @@ const AdminOrders = () => {
                     <div className="live-order-box-1">
                       <span className="live-order-box-1-1">
                         {users[order.user] &&
-                          users[order.user].avatar &&
-                          users[order.user].avatar.url ? (
+                        users[order.user].avatar &&
+                        users[order.user].avatar.url ? (
                           <img
                             src={users[order.user].avatar.url}
                             alt={users[order.user].name}
@@ -317,21 +358,24 @@ const AdminOrders = () => {
                             <span>
                               Total Bill{" "}
                               <span className="px-2">₹{order.totalPrice}</span>
-                              <span className={
-                                order.paymentInfo.status === "paid"
-                                  ? "text-success"
-                                  : "text-danger"
-                              }>
+                              <span
+                                className={
+                                  order.paymentInfo.status === "paid"
+                                    ? "text-success"
+                                    : "text-danger"
+                                }
+                              >
                                 {order.paymentInfo.status}
                               </span>
                             </span>
                             <span className="d-flex items-center text-blue-600">
                               <Button
                                 variant="text"
-                                className={` ${loadingButton
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                                  }`}
+                                className={` ${
+                                  loadingButton
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                                }`}
                                 onClick={() => handlePrintBill(order)}
                                 disabled={loadingButton}
                                 startIcon={
@@ -361,10 +405,11 @@ const AdminOrders = () => {
                             ) : (
                               <Button
                                 variant="contained"
-                                className={`bg-blue-500 text-white ${loadingButton
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                                  }`}
+                                className={`bg-blue-500 text-white ${
+                                  loadingButton
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                                }`}
                                 onClick={() =>
                                   handleOrderStatusChange(
                                     order._id,
