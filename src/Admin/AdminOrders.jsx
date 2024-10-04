@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 import newOrderSound from "../images/newOrderAlert.mp3";
 import { IoMdClose } from "react-icons/io";
+
 import {
   getAllOrders,
   clearErrors,
@@ -26,7 +27,7 @@ import NewOrderPopup from "./NewOrderPopup";
 import OrderStatusStepper from "./OrderStatusStepper";
 import OrderBill from "./OrderBill";
 import Loader from "../components/Layout/Loader";
-import io from "socket.io-client"; 
+import io from "socket.io-client";
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { error, orders, loading } = useSelector((state) => state.allOrders);
@@ -40,8 +41,7 @@ const AdminOrders = () => {
   const [showBill, setShowBill] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const [socket, setSocket] = useState(null); // State for socket connection
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     // Initialize Socket.IO

@@ -64,7 +64,7 @@ export const redeemCoupon = (couponCode, subtotal) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:5000/api/v1/redeem-coupon",
+      "https://resback-ql89.onrender.com/api/v1/redeem-coupon",
       { couponCode, subtotal },
       config
     );
