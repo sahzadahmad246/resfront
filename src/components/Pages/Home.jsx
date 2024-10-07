@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import homeBanner from "../../images/homeBanner.png";
@@ -12,11 +12,12 @@ import { getOutletInfo } from "../../actions/adminAction";
 import { addItemsToCart } from "../../actions/cartAction";
 import QuickCart from "./QuickCart";
 import MetaData from "../Home/MetaData";
-import LocationPicker from "../User/LocationPicker"; 
+import LocationPicker from "../User/LocationPicker";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { CiUnlock, CiLock } from "react-icons/ci";
 import { haversineDistance } from "../User/haversineDistance";
 import LastOrderProducts from "../Home/LastOrderProducts";
+
 const Home = () => {
   const dispatch = useDispatch();
 
@@ -24,11 +25,19 @@ const Home = () => {
   const { outlet } = useSelector((state) => state.getOutletInfo);
   const { cartItems } = useSelector((state) => state.cart);
   const { products, loading, error } = useSelector((state) => state.products);
+  const {
+    loading: ordersLoading,
+    error: ordersError,
+    orders,
+  } = useSelector((state) => state.myOrders);
   const { location, address } = useSelector((state) => state.location);
   const [subCategories, setSubCategories] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
   const [fetchingLocation, setFetchingLocation] = useState(true);
   const [deliveryAvailable, setDeliveryAvailable] = useState(true);
+  const [showLiveOrder, setShowLiveOrder] = useState(false);
+  const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
+  const liveOrderRef = useRef(null);
 
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
@@ -68,22 +77,20 @@ const Home = () => {
     }
   }, [products]);
 
-
-
   useEffect(() => {
     if (location && outlet) {
       const userLocation = {
         lat: location.lat,
         lng: location.lng,
       };
-  
+
       const outletLocation = {
-        lat: outlet.location?.coordinates[1], 
-        lng: outlet.location?.coordinates[0], 
+        lat: outlet.location?.coordinates[1],
+        lng: outlet.location?.coordinates[0],
       };
-  
+
       const distance = haversineDistance(userLocation, outletLocation);
-  
+
       if (distance > 6) {
         setDeliveryAvailable(false);
       } else {
@@ -91,7 +98,22 @@ const Home = () => {
       }
     }
   }, [location, outlet]);
-  
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setShowLiveOrder(true);
+      } else {
+        setShowLiveOrder(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const handleAddToCart = (productId) => {
     dispatch(addItemsToCart(productId, 1));
@@ -108,6 +130,67 @@ const Home = () => {
     }
   };
 
+  const LiveOrderCard = ({ liveOrders }) => {
+    if (!liveOrders || liveOrders.length === 0) return null;
+  
+    const isMobile = window.innerWidth <= 768;
+  
+    const handlePrev = () => {
+      setCurrentOrderIndex((prevIndex) =>
+        prevIndex === 0 ? liveOrders.length - 1 : prevIndex - 1
+      );
+    };
+  
+    const handleNext = () => {
+      setCurrentOrderIndex((prevIndex) =>
+        prevIndex === liveOrders.length - 1 ? 0 : prevIndex + 1
+      );
+    };
+  
+    const currentOrder = liveOrders[currentOrderIndex];
+  
+    return (
+      <div
+        ref={liveOrderRef}
+        className={`fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg p-4 transition-all duration-300 rounded-lg ${
+          showLiveOrder ? 'translate-y-0' : 'translate-y-full'
+        }`}
+        style={{
+          width: isMobile ? 'calc(100% - 32px)' : '50%',
+          bottom: isMobile ? '80px' : '0',
+          maxWidth: '600px',
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <button onClick={handlePrev} className="text-gray-500 hover:text-gray-700 mx-2">
+            &lt;
+          </button>
+          <div className="flex items-center space-x-4 flex-grow">
+            <img
+              src={currentOrder.orderItems[0].image.url || homeBanner}
+              alt={currentOrder.orderItems[0].name}
+              className="w-16 h-16 object-cover rounded-lg"
+            />
+            <div className="flex-grow">
+              <h3 className="font-semibold">{currentOrder.orderItems[0].name}</h3>
+              <p className="text-sm text-gray-600">{currentOrder.orderStatus}</p>
+            </div>
+          </div>
+          <Link
+            to={`/order/${currentOrder._id}`}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+          >
+            View Order
+          </Link>
+          <button onClick={handleNext} className="text-gray-500 hover:text-gray-700 mx-2">
+            &gt;
+          </button>
+        </div>
+      </div>
+    );
+  };
+  const liveOrders = orders ? orders.filter(order => order.orderStatus !== "Delivered") : [];
+
   return (
     <>
       {loading ? (
@@ -115,7 +198,7 @@ const Home = () => {
           <Loader />
         </div>
       ) : (
-        <div>
+        <div className="pb-20">
           <MetaData title={"Thai Chilli China"} />
 
           {address && (
@@ -125,9 +208,8 @@ const Home = () => {
                   <CiLocationArrow1 />
                 </span>
                 <span>
-                  {address.neighborhood  || "Unknown locality"}, {""}
-                  {address.city  || "Unknown city"}
-                 
+                  {address.neighborhood || "Unknown locality"}, {""}
+                  {address.city || "Unknown city"}
                 </span>
               </div>
               <div
@@ -243,8 +325,9 @@ const Home = () => {
               ))}
             </div>
           </div>
-<LastOrderProducts/>
+          <LastOrderProducts />
           <LocationPicker />
+          <LiveOrderCard liveOrders={liveOrders} />
         </div>
       )}
     </>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { myOrders } from "../../actions/orderAction";
+import { addItemsToCart } from "../../actions/cartAction"; // Import the addItemsToCart action
 import { toast } from "react-toastify";
 import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
@@ -20,72 +21,72 @@ const LastOrderProducts = () => {
 
   useEffect(() => {
     if (orders && orders.length > 0) {
-      const lastOrder = orders[orders.length - 1]; // Get last order details
-      setLastOrderProducts(lastOrder.orderItems); // Set products from last order
+      const lastOrder = orders[orders.length - 1]; // Get the last order
+      setLastOrderProducts(lastOrder.orderItems); // Set the order items of the last order
     }
-    if (error) {
-      toast.error(error);
-    }
-  }, [orders, error]);
+  }, [orders]);
+
+  const handleAddToCart = (productId) => {
+    dispatch(addItemsToCart(productId, 1)); // Dispatch the action to add the item to the cart
+    toast.success("Item added to cart");
+  };
+
+  if (loading) return <Loader />; // Show loader while loading
+
+  if (error) {
+    toast.error(error); // Show error message if there's an error
+    return null;
+  }
 
   return (
     <div className="last-order-products">
-      <h2 className="fw-bold text-center p-3">Products from Your Last Order</h2>
-      {loading ? (
-        <Loader />
-      ) : lastOrderProducts.length === 0 ? (
-        <p className="text-center">You have not placed any orders yet.</p>
-      ) : (
-        <div className="relative">
-          <div
-            ref={sliderRef}
-            className="product-slider d-flex overflow-auto random-products"
-            style={{
-              scrollBehavior: "smooth",
-              overflowX: "auto",
-              whiteSpace: "nowrap", // Ensures that the items are arranged horizontally
-            }}
-          >
-            {lastOrderProducts.map((item) => (
-              <div
-                key={item.product}
-                className="product-card"
-                style={{ display: "inline-block", marginRight: "10px" }} // Ensure products are displayed in line
-              >
-                <img
-                  src={item.image.url || "/placeholder.svg"}
-                  alt={item.name}
-                  className="product-image"
-                />
-                <Link to={`/product/${item.product}`}>
-                  <div className="d-flex align-items-center mb-2">
-                    <h3 className="me-2">{item.name}</h3>
-                    {item.foodType === "Veg" ? (
-                      <img
-                        src={vegIcon}
-                        alt="Veg Icon"
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    ) : item.foodType === "Non Veg" ? (
-                      <img
-                        src={nonVegIcon}
-                        alt="Non Veg Icon"
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    ) : null}
-                  </div>
-                </Link>
-                <div className="d-flex justify-between align-items-center w-full">
-                  <p className="fw-bold text-dark">₹{item.price}</p>
-                  <button className="random-add-btn bg-danger rounded-lg">
-                    Add Again
-                  </button>
-                </div>
-              </div>
-            ))}
+      <h2 className="fw-bold text-center p-3">Last Order Products</h2>
+      <div className="product-grid">
+        {lastOrderProducts.map((product) => (
+          <div key={product._id} className="product-card">
+            <img
+              src={product.image.url} // Assuming the product has an image property
+              alt={product.name}
+            />
+            <Link to={`/product/${product._id}`}>
+              <span className="d-flex align-items-center">
+                <h3 className="me-2">{product.name}</h3>
+                {product.foodType === "Veg" ? (
+                  <img
+                    src={vegIcon}
+                    alt="Veg Icon"
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                ) : product.foodType === "Non Veg" ? (
+                  <img
+                    src={nonVegIcon}
+                    alt="Non Veg Icon"
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                ) : null}
+              </span>
+            </Link>
+            <span className="d-flex justify-between items-center w-full">
+              <p className="fw-bold text-dark">₹{product.price}</p>
+              {product.stock > 0 ? (
+                <button
+                  className="random-add-btn bg-danger rounded-lg"
+                  onClick={() => handleAddToCart(product._id)} // Add to cart button
+                >
+                  Add
+                </button>
+              ) : (
+                <button
+                  className="random-add-btn bg-secondary rounded-lg"
+                  disabled
+                >
+                  Out of Stock
+                </button>
+              )}
+            </span>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };
