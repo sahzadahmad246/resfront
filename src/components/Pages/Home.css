@@ -66,17 +66,22 @@
   background-color: #f9f9f9;
   overflow-x: auto;
   white-space: nowrap;
+
+  padding: 10px;
 }
 
 .product-grid {
   display: flex;
   gap: 15px;
+
+ 
+  
 }
 
 .product-card {
   flex: 0 0 auto;
   width: 210px;
-  border: 1px solid #ddd;
+
   background: #f6f8fc;
   border-radius: 16px;
   overflow: hidden;
@@ -107,7 +112,14 @@
   color: #fff;
   height: 2rem;
 }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 @media only screen and (max-width: 767px) {
   .quick-status {
     margin: 0px 10px;

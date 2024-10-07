@@ -16,7 +16,7 @@ import LocationPicker from "../User/LocationPicker";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { CiUnlock, CiLock } from "react-icons/ci";
 import { haversineDistance } from "../User/haversineDistance";
-
+import LastOrderProducts from "../Home/LastOrderProducts";
 const Home = () => {
   const dispatch = useDispatch();
 
@@ -243,7 +243,7 @@ const Home = () => {
               ))}
             </div>
           </div>
-
+<LastOrderProducts/>
           <LocationPicker />
         </div>
       )}
