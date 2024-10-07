@@ -40,7 +40,8 @@ import {
 } from "./reducers/adminReducer";
 
 // Order Status Action
-import { updateOrderStatus } from "./actions/orderAction";
+// import { updateOrderStatus } from "./actions/orderAction";
+import { updateOrderStatusReducer } from "./reducers/orderReducer";
 
 // Coupon Reducers
 import {
@@ -82,7 +83,7 @@ const store = configureStore({
     orderDetails: orderDetailsReducer,
     allOrders: allOrdersReducer,
     codOrder: codOrderReducer,
-    orderStatus: updateOrderStatus,
+    orderStatus: updateOrderStatusReducer,
 
     // Admin-related reducers (User, Product, Outlet)
     allUsers: allUsersReducer,

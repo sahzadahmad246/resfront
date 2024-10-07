@@ -174,7 +174,7 @@ export const updateOrderStatus = (orderId, status) => async (dispatch) => {
       { status },
       config
     );
-
+    console.log("data.success:", data.success);
     dispatch({ type: UPDATE_ORDER_STATUS_SUCCESS, payload: data.success });
   } catch (error) {
     dispatch({

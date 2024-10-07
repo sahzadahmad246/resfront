@@ -139,36 +139,36 @@ export default function ConfirmOrder() {
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-8">
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Delivering to</h2>
-            <div className="space-y-2">
-              <p>
+            <h2 className="text-1xl font-bold mb-4">Delivering to</h2>
+            <div className="space-y-2 d-flex flex-col">
+              <span>
                 <i className="fas fa-user mr-2"></i>
                 {user && user.name}
-              </p>
-              <p>
+              </span>
+              <span>
                 <i className="fas fa-phone mr-2"></i>
                 {user && user.phone}
-              </p>
-              <p>
+              </span>
+              <span>
                 <i className="fas fa-envelope mr-2"></i>
                 {user && user.email}
-              </p>
-              <p>
+              </span>
+              <span>
                 <i className="fas fa-home mr-2"></i>
                 {user?.deliveryInfo?.address || "No address found"}
-              </p>
-              <p>
+              </span>
+              <span>
                 <i className="fas fa-city mr-2"></i>
                 {user?.deliveryInfo?.city || "No city found"}
-              </p>
-              <p>
+              </span>
+              <span>
                 <i className="fas fa-map-pin mr-2"></i>
                 {user?.deliveryInfo?.pincode || "No pincode found"}
-              </p>
+              </span>
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Items in your cart</h2>
+            <h2 className="text-1xl font-bold mb-4">Items in your cart</h2>
             <div className="space-y-4">
               {cartItems.map((item) => (
                 <div
@@ -198,7 +198,7 @@ export default function ConfirmOrder() {
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-2xl font-bold mb-6">Price Details</h2>
+          <h2 className="text-1xl font-bold mb-6">Price Details</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
               <span>Subtotal ({totalQuantity} items)</span>

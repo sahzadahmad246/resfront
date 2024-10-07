@@ -46,7 +46,7 @@ const AdminOrders = () => {
 
   useEffect(() => {
     // Initialize Socket.IO
-    const newSocket = io("http://localhost:5000"); // Change to your backend URL
+    const newSocket = io("https://resback-ql89.onrender.com"); // Change to your backend URL
     setSocket(newSocket);
 
     // Listen for order updates

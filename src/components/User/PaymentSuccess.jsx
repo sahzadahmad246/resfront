@@ -23,7 +23,7 @@ const PaymentSuccess = () => {
       handleCreateOrder(token);
     }
   }, [status, reference, token]);
-
+console.log(user)
   const handleCreateOrder = (token) => {
     console.log("orderInfo:", orderInfo);
     console.log("cartItems:", cartItems);
@@ -48,6 +48,9 @@ const PaymentSuccess = () => {
       discount: orderInfo.discount,
       taxPrice: orderInfo.gst,
       totalPrice: orderInfo.total,
+      userDetails: {
+        username: user.name
+      },
       token,
     };
 
