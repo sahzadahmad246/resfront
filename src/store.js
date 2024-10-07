@@ -69,7 +69,7 @@ const store = configureStore({
     products: productReducer,
     productDetails: productDetailsReducer,
     adminProducts: adminAllProductReducer,
-
+    review: newReviewReducer,
     // User-related reducers
     user: userReducer,
     forgotPassword: forgotPasswordReducer,
