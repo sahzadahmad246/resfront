@@ -20,6 +20,7 @@ const FilterOrders = ({ filter, handleFilterChange }) => {
       <div className="last-30-day">
         <select
           name="status"
+          className="bg-white"
           value={filter.status}
           onChange={handleFilterChange}
         >
@@ -29,7 +30,12 @@ const FilterOrders = ({ filter, handleFilterChange }) => {
         </select>
       </div>
       <div className="last-30-day">
-        <select name="month" value={filter.month} onChange={handleFilterChange}>
+        <select
+          name="month"
+          value={filter.month}
+          onChange={handleFilterChange}
+          className="bg-white"
+        >
           <option value="">By Months</option>
           <option value="1">January</option>
           <option value="2">February</option>
@@ -45,7 +51,7 @@ const FilterOrders = ({ filter, handleFilterChange }) => {
           <option value="12">December</option>
         </select>
       </div>
-      <div className="last-30-day">
+      <div className="last-30-day bg-white">
         <select name="year" value={filter.year} onChange={handleFilterChange}>
           <option value="">By Year</option>
           {[...Array(10)].map((_, i) => (
