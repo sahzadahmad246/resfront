@@ -338,8 +338,8 @@ const Home = () => {
               ))}
             </div>
           </div>
-          {isAuthenticated && <LastOrderProducts />}
-          <LocationPicker />
+          {isAuthenticated ? <LastOrderProducts /> : null } 
+          {/* <LocationPicker /> */}
           <LiveOrderCard liveOrders={liveOrders} />
         </div>
       )}
