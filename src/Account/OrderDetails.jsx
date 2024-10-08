@@ -16,13 +16,27 @@ import { IoHelpCircleOutline } from "react-icons/io5";
 import { MdOutlineFileDownload } from "react-icons/md";
 import MetaData from "../components/Home/MetaData";
 import OrderStatusStepper from "../Admin/OrderStatusStepper";
+import { io } from "socket.io-client"; // Import socket.io-client
 
 const OrderDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { order, error, loading } = useSelector((state) => state.orderDetails);
-  console.log(order);
+
+  useEffect(() => {
+    const socket = io("https://resback-ql89.onrender.com");
+
+    socket.on("orderStatusUpdated", (updatedOrder) => {
+      if (updatedOrder._id === id) {
+        dispatch(getOrderDetails(id));
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (error) {
