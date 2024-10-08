@@ -16,6 +16,9 @@ import { IoHelpCircleOutline } from "react-icons/io5";
 import { MdOutlineFileDownload } from "react-icons/md";
 import MetaData from "../components/Home/MetaData";
 import OrderStatusStepper from "../Admin/OrderStatusStepper";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { getOutletInfo } from "../actions/adminAction";
+import InvoicePDF from "./InvoicePDF";
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -23,6 +26,7 @@ const OrderDetails = () => {
   const navigate = useNavigate();
   const { order, error, loading } = useSelector((state) => state.orderDetails);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const { outlet } = useSelector((state) => state.getOutletInfo);
 
   useEffect(() => {
     if (error) {
@@ -30,9 +34,10 @@ const OrderDetails = () => {
       dispatch(clearErrors());
     }
     dispatch(getOrderDetails(id));
+    dispatch(getOutletInfo());
     setIsInitialLoad(false);
   }, [dispatch, id, error]);
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(getOrderDetails(id));
@@ -195,10 +200,21 @@ const OrderDetails = () => {
                       <IoHelpCircleOutline size={40} className="px-2" />
                       Help
                     </button>
-                    <button className="d-flex items-center justify-center">
-                      <MdOutlineFileDownload size={40} className="px-2" />
-                      Download Invoice
-                    </button>
+                    <PDFDownloadLink
+                      document={<InvoicePDF order={order} outlet={outlet} />}
+                      fileName={`invoice_${order._id}.pdf`}
+                    >
+                      {({ blob, url, loading, error }) =>
+                        loading ? (
+                          "Loading document..."
+                        ) : (
+                          <button className="d-flex items-center justify-center">
+                            <MdOutlineFileDownload size={40} className="px-2" />
+                            Download Invoice
+                          </button>
+                        )
+                      }
+                    </PDFDownloadLink>
                   </div>
                 </div>
               </div>

@@ -19,12 +19,11 @@ const OrderBill = ({ order }) => {
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.singleUser);
   const { outlet } = useSelector((state) => state.getOutletInfo);
-console.log(outlet)
+  console.log(outlet);
   useEffect(() => {
     dispatch(getSingleUser(order.user));
   }, [order]);
-  console.log(order);
-  console.log(users);
+
   const currentUser = users[order.user];
 
   return (
@@ -34,11 +33,9 @@ console.log(outlet)
           <View style={styles.header}>
             <Image src={outlet.outletLogo?.url} style={styles.outletLogo} />
             <View style={styles.headerBox}>
+              <Text style={styles.headerText}>{outlet.address}</Text>
               <Text style={styles.headerText}>
-                {outlet.address} 
-              </Text>
-              <Text style={styles.headerText}>
-                Mobile No. {outlet.altPhone},  GST- {outlet.gst}
+                Mobile No. {outlet.altPhone}, GST- {outlet.gst}
               </Text>
               <Text style={styles.headerText}>Order Id- #{order._id}</Text>
             </View>
