@@ -39,7 +39,7 @@ const Home = () => {
   const [showLiveOrder, setShowLiveOrder] = useState(false);
   const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
   const liveOrderRef = useRef(null);
-  console.log("user is not logged in", isAuthenticated);
+
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
     dispatch(getProducts());
@@ -153,7 +153,7 @@ const Home = () => {
     return (
       <div
         ref={liveOrderRef}
-        className={`fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg p-4 transition-all duration-300 rounded-lg ${
+        className={`fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg p-2 transition-all duration-300 rounded-lg ${
           showLiveOrder ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
@@ -169,7 +169,7 @@ const Home = () => {
           >
             &lt;
           </button>
-          <div className="flex items-center space-x-4 flex-grow">
+          <div className="flex items-center space-x-1 flex-grow">
             <img
               src={currentOrder.orderItems[0].image.url || homeBanner}
               alt={currentOrder.orderItems[0].name}
@@ -179,9 +179,9 @@ const Home = () => {
               <h3 className="font-semibold">
                 {currentOrder.orderItems[0].name}
               </h3>
-              <p className="text-sm text-gray-600">
-                {currentOrder.orderStatus}
-              </p>
+              <span className="text-sm text-green-600">
+               Your order is {currentOrder.orderStatus}
+              </span>
             </div>
           </div>
           <Link
@@ -339,7 +339,7 @@ const Home = () => {
             </div>
           </div>
           {isAuthenticated ? <LastOrderProducts /> : null } 
-          {/* <LocationPicker /> */}
+          <LocationPicker />
           <LiveOrderCard liveOrders={liveOrders} />
         </div>
       )}

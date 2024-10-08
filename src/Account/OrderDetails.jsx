@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { getOrderDetails, clearErrors } from "../actions/orderAction";
@@ -16,27 +16,13 @@ import { IoHelpCircleOutline } from "react-icons/io5";
 import { MdOutlineFileDownload } from "react-icons/md";
 import MetaData from "../components/Home/MetaData";
 import OrderStatusStepper from "../Admin/OrderStatusStepper";
-import { io } from "socket.io-client"; // Import socket.io-client
 
 const OrderDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { order, error, loading } = useSelector((state) => state.orderDetails);
-
-  useEffect(() => {
-    const socket = io("https://resback-ql89.onrender.com");
-
-    socket.on("orderStatusUpdated", (updatedOrder) => {
-      if (updatedOrder._id === id) {
-        dispatch(getOrderDetails(id));
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [dispatch, id]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     if (error) {
@@ -44,7 +30,16 @@ const OrderDetails = () => {
       dispatch(clearErrors());
     }
     dispatch(getOrderDetails(id));
+    setIsInitialLoad(false);
   }, [dispatch, id, error]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(getOrderDetails(id));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [dispatch, id]);
 
   const handleBack = () => {
     navigate(-1);
@@ -73,7 +68,7 @@ const OrderDetails = () => {
       case "Delivered":
         return "Your order was delivered.";
       case "Rejected":
-        return "Oops!  order rejected. Call resturat to know why";
+        return "Oops!  order rejected. Call restaurant to know why.";
       default:
         return "";
     }
@@ -82,7 +77,7 @@ const OrderDetails = () => {
   return (
     <>
       <MetaData title={`Order Id #${order?._id}`} />
-      {loading ? (
+      {isInitialLoad ? (
         <Loader />
       ) : (
         <div className="order-details-main">
@@ -95,7 +90,7 @@ const OrderDetails = () => {
                 arrow_back
               </span>
               <p>Order Details</p>
-              <div className=" d-flex items-center justify-center bg-success px-3 text-light rounded-full">
+              <div className="d-flex items-center justify-center bg-success px-3 text-light rounded-full">
                 {order?.paymentInfo?.status}
                 <FaCheckDouble size={20} className="ps-2" />
               </div>
@@ -129,7 +124,6 @@ const OrderDetails = () => {
                   </span>
                 </span>
               </h4>
-
               <h4 className="d-flex items-center">
                 <MdLocationPin size={60} className="py-2" />
                 <span className="d-flex flex-col">
