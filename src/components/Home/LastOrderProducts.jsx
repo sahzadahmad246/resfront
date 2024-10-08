@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { myOrders } from "../../actions/orderAction";
-import { addItemsToCart } from "../../actions/cartAction"; // Import the addItemsToCart action
+import { addItemsToCart } from "../../actions/cartAction";
 import { toast } from "react-toastify";
 import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
 import Loader from "../Layout/Loader";
-import "../../components/Pages/Home.css"; // Assuming your CSS styles for both sections are here
+import "../../components/Pages/Home.css";
 
 const LastOrderProducts = () => {
   const dispatch = useDispatch();
@@ -21,13 +21,13 @@ const LastOrderProducts = () => {
 
   useEffect(() => {
     if (orders && orders.length > 0) {
-      const lastOrder = orders[orders.length - 1]; // Get the last order
-      setLastOrderProducts(lastOrder.orderItems); // Set the order items of the last order
+      const lastOrder = orders[orders.length - 1];
+      setLastOrderProducts(lastOrder.orderItems);
     }
   }, [orders]);
 
   const handleAddToCart = (productId) => {
-    dispatch(addItemsToCart(productId, 1)); // Dispatch the action to add the item to the cart
+    dispatch(addItemsToCart(productId, 1));
     toast.success("Item added to cart");
   };
 
@@ -68,21 +68,13 @@ const LastOrderProducts = () => {
             </Link>
             <span className="d-flex justify-between items-center w-full">
               <p className="fw-bold text-dark">₹{product.price}</p>
-              {product.stock > 0 ? (
-                <button
-                  className="random-add-btn bg-danger rounded-lg"
-                  onClick={() => handleAddToCart(product._id)} // Add to cart button
-                >
-                  Add
-                </button>
-              ) : (
-                <button
-                  className="random-add-btn bg-secondary rounded-lg"
-                  disabled
-                >
-                  Out of Stock
-                </button>
-              )}
+
+              <button
+                className="random-add-btn bg-danger rounded-lg"
+                onClick={() => handleAddToCart(product._id)}
+              >
+                Add
+              </button>
             </span>
           </div>
         ))}

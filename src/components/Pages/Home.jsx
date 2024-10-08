@@ -30,6 +30,7 @@ const Home = () => {
     error: ordersError,
     orders,
   } = useSelector((state) => state.myOrders);
+  const { isAuthenticated } = useSelector((state) => state.user);
   const { location, address } = useSelector((state) => state.location);
   const [subCategories, setSubCategories] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
@@ -38,7 +39,7 @@ const Home = () => {
   const [showLiveOrder, setShowLiveOrder] = useState(false);
   const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
   const liveOrderRef = useRef(null);
-
+  console.log("user is not logged in", isAuthenticated);
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
     dispatch(getProducts());
@@ -108,10 +109,10 @@ const Home = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -132,37 +133,40 @@ const Home = () => {
 
   const LiveOrderCard = ({ liveOrders }) => {
     if (!liveOrders || liveOrders.length === 0) return null;
-  
+
     const isMobile = window.innerWidth <= 768;
-  
+
     const handlePrev = () => {
       setCurrentOrderIndex((prevIndex) =>
         prevIndex === 0 ? liveOrders.length - 1 : prevIndex - 1
       );
     };
-  
+
     const handleNext = () => {
       setCurrentOrderIndex((prevIndex) =>
         prevIndex === liveOrders.length - 1 ? 0 : prevIndex + 1
       );
     };
-  
+
     const currentOrder = liveOrders[currentOrderIndex];
-  
+
     return (
       <div
         ref={liveOrderRef}
         className={`fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg p-4 transition-all duration-300 rounded-lg ${
-          showLiveOrder ? 'translate-y-0' : 'translate-y-full'
+          showLiveOrder ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
-          width: isMobile ? 'calc(100% - 32px)' : '50%',
-          bottom: isMobile ? '80px' : '0',
-          maxWidth: '600px',
+          width: isMobile ? "calc(100% - 32px)" : "50%",
+          bottom: isMobile ? "80px" : "0",
+          maxWidth: "600px",
         }}
       >
         <div className="flex items-center justify-between">
-          <button onClick={handlePrev} className="text-gray-500 hover:text-gray-700 mx-2">
+          <button
+            onClick={handlePrev}
+            className="text-gray-500 hover:text-gray-700 mx-2"
+          >
             &lt;
           </button>
           <div className="flex items-center space-x-4 flex-grow">
@@ -172,8 +176,12 @@ const Home = () => {
               className="w-16 h-16 object-cover rounded-lg"
             />
             <div className="flex-grow">
-              <h3 className="font-semibold">{currentOrder.orderItems[0].name}</h3>
-              <p className="text-sm text-gray-600">{currentOrder.orderStatus}</p>
+              <h3 className="font-semibold">
+                {currentOrder.orderItems[0].name}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {currentOrder.orderStatus}
+              </p>
             </div>
           </div>
           <Link
@@ -182,14 +190,19 @@ const Home = () => {
           >
             View Order
           </Link>
-          <button onClick={handleNext} className="text-gray-500 hover:text-gray-700 mx-2">
+          <button
+            onClick={handleNext}
+            className="text-gray-500 hover:text-gray-700 mx-2"
+          >
             &gt;
           </button>
         </div>
       </div>
     );
   };
-  const liveOrders = orders ? orders.filter(order => order.orderStatus !== "Delivered") : [];
+  const liveOrders = orders
+    ? orders.filter((order) => order.orderStatus !== "Delivered")
+    : [];
 
   return (
     <>
@@ -325,7 +338,7 @@ const Home = () => {
               ))}
             </div>
           </div>
-          <LastOrderProducts />
+          {isAuthenticated && <LastOrderProducts />}
           <LocationPicker />
           <LiveOrderCard liveOrders={liveOrders} />
         </div>
