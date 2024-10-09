@@ -11,7 +11,6 @@ import {
 import { useParams } from "react-router-dom";
 import Loader from "../Layout/Loader";
 import ReviewCard from "./ReviewCard";
-import { toast } from "react-toastify";
 import MetaData from "../Home/MetaData";
 import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
@@ -23,6 +22,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
 import { DialogTitle, Rating } from "@mui/material";
+import ProductDetailsError from "./ProductDetailsError";
 
 const ProductDetails = () => {
   const dispatch = useDispatch();
@@ -49,16 +49,12 @@ const ProductDetails = () => {
   };
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch(clearErrors());
-    }
     if (reviewError) {
       toast.error(reviewError);
       dispatch(clearErrors());
     }
     dispatch(getProductDetails(id));
-  }, [dispatch, id, error, reviewError, success]);
+  }, [dispatch, id, reviewError, success]);
 
   useEffect(() => {
     if (products && products.foodType === "Non Veg") {
@@ -141,6 +137,8 @@ const ProductDetails = () => {
       <MetaData title={`${products && products.name} - Thai Chilli China`} />
       {loading ? (
         <Loader />
+      ) : error ? (
+        <ProductDetailsError error={error} /> // Render the error component if there's an error
       ) : (
         <>
           <div className="product-details-left">

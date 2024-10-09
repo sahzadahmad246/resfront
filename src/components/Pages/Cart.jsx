@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import { getOutletInfo } from "../../actions/adminAction";
 import { loadCartItems } from "../../actions/cartAction";
-
+import MetaData from "../Home/MetaData";
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -18,7 +18,10 @@ const Cart = () => {
     dispatch(loadCartItems());
   }, [dispatch]);
 
-  const subtotal = cartItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (acc, curr) => acc + curr.price * curr.quantity,
+    0
+  );
   const totalQuantity = cartItems.reduce((acc, curr) => acc + curr.quantity, 0);
   const deliveryCharge = subtotal > 500 ? 0 : 40;
   const tax = (subtotal * outlet.taxPercent) / 100;
@@ -30,6 +33,7 @@ const Cart = () => {
 
   return (
     <>
+      <MetaData title="Cart - Thai Chilli China" />
       {cartItems.length !== 0 ? (
         <div className="cart-main">
           <div className="cart-left">

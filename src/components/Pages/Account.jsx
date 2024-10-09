@@ -47,10 +47,11 @@ const Account = () => {
   const handleItemClick = (componentName) => {
     setActiveComponent(componentName);
   };
+  const title = isAuthenticated ? `${user.name}'s account` : "Account";
 
   return (
     <div className="account-main">
-      <MetaData title={`${user && user.name}'s account`} />
+      <MetaData title={title} />
       {loading ? (
         <Loader />
       ) : (
@@ -74,7 +75,9 @@ const Account = () => {
                   </div>
                   {!isMobile && (
                     <div className="account-right d-flex justify-center ">
-                      <h1 className="pt-5 fs-4  font-semibold">Welcome to your Account</h1>
+                      <h1 className="pt-5 fs-4  font-semibold">
+                        Welcome to your Account
+                      </h1>
                     </div>
                   )}
                 </div>
