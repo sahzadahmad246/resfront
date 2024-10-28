@@ -3,7 +3,7 @@ import "./Profile.css";
 import profilePic from "../images/china.png";
 import { useDispatch, useSelector } from "react-redux";
 import UpdateProfile from "../components/User/UpdateProfile";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { updateAvatar, clearErrors } from "../actions/userAction";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Layout/Loader";

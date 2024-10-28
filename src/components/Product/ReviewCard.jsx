@@ -16,7 +16,7 @@ import {
   clearErrors,
 } from "../../actions/productAction";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const ReviewCard = ({ review, openEditReviewDialog }) => {
   const dispatch = useDispatch();

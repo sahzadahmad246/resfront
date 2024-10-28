@@ -6,7 +6,7 @@ import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../Layout/Loader";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { clearErrors, getProducts } from "../../actions/productAction";
 import { getOutletInfo } from "../../actions/adminAction";
 import { addItemsToCart } from "../../actions/cartAction";
@@ -17,6 +17,7 @@ import { CiLocationArrow1 } from "react-icons/ci";
 import { CiUnlock, CiLock } from "react-icons/ci";
 import { haversineDistance } from "../User/haversineDistance";
 import LastOrderProducts from "../Home/LastOrderProducts";
+import LiveOrder from "./../../Account/Liveorder";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -37,13 +38,14 @@ const Home = () => {
   const [fetchingLocation, setFetchingLocation] = useState(true);
   const [deliveryAvailable, setDeliveryAvailable] = useState(true);
   const [showLiveOrder, setShowLiveOrder] = useState(false);
-  const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
-  const liveOrderRef = useRef(null);
+
+  const liveOrders = orders
+    ? orders.filter((order) => order.orderStatus !== "Delivered")
+    : [];
 
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
     dispatch(getProducts());
-    console.log("data from redux", location, address);
     if (error) {
       toast.error(error);
       dispatch(clearErrors());
@@ -92,21 +94,13 @@ const Home = () => {
 
       const distance = haversineDistance(userLocation, outletLocation);
 
-      if (distance > 6) {
-        setDeliveryAvailable(false);
-      } else {
-        setDeliveryAvailable(true);
-      }
+      setDeliveryAvailable(distance <= 6);
     }
   }, [location, outlet]);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setShowLiveOrder(true);
-      } else {
-        setShowLiveOrder(false);
-      }
+      setShowLiveOrder(window.scrollY > 100);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -131,79 +125,6 @@ const Home = () => {
     }
   };
 
-  const LiveOrderCard = ({ liveOrders }) => {
-    if (!liveOrders || liveOrders.length === 0) return null;
-
-    const isMobile = window.innerWidth <= 768;
-
-    const handlePrev = () => {
-      setCurrentOrderIndex((prevIndex) =>
-        prevIndex === 0 ? liveOrders.length - 1 : prevIndex - 1
-      );
-    };
-
-    const handleNext = () => {
-      setCurrentOrderIndex((prevIndex) =>
-        prevIndex === liveOrders.length - 1 ? 0 : prevIndex + 1
-      );
-    };
-
-    const currentOrder = liveOrders[currentOrderIndex];
-
-    return (
-      <div
-        ref={liveOrderRef}
-        className={`fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg p-2 transition-all duration-300 rounded-lg ${
-          showLiveOrder ? "translate-y-0" : "translate-y-full"
-        }`}
-        style={{
-          width: isMobile ? "calc(100% - 32px)" : "50%",
-          bottom: isMobile ? "80px" : "0",
-          maxWidth: "600px",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handlePrev}
-            className="text-gray-500 hover:text-gray-700 mx-2"
-          >
-            &lt;
-          </button>
-          <div className="flex items-center space-x-1 flex-grow">
-            <img
-              src={currentOrder.orderItems[0].image.url || homeBanner}
-              alt={currentOrder.orderItems[0].name}
-              className="w-16 h-16 object-cover rounded-lg"
-            />
-            <div className="flex-grow">
-              <h3 className="font-semibold">
-                {currentOrder.orderItems[0].name}
-              </h3>
-              <span className="text-sm text-green-600">
-               Your order is {currentOrder.orderStatus}
-              </span>
-            </div>
-          </div>
-          <Link
-            to={`/account/orders/${currentOrder._id}`}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
-          >
-            View Order
-          </Link>
-          <button
-            onClick={handleNext}
-            className="text-gray-500 hover:text-gray-700 mx-2"
-          >
-            &gt;
-          </button>
-        </div>
-      </div>
-    );
-  };
-  const liveOrders = orders
-    ? orders.filter((order) => order.orderStatus !== "Delivered")
-    : [];
-
   return (
     <>
       {loading ? (
@@ -214,46 +135,47 @@ const Home = () => {
         <div className="pb-20">
           <MetaData title={"Thai Chilli China"} />
 
-          {address && (
-            <div className="location-status">
-              <div className="quick-location">
-                <span className="p-2 m-2 bg-gray-200 rounded-full">
-                  <CiLocationArrow1 />
-                </span>
-                <span>
-                  {address.neighborhood || "Unknown locality"}, {""}
-                  {address.city || "Unknown city"}
-                </span>
-              </div>
-              <div
-                className={`outlet-status p-2 m-2 ${
-                  outlet.outletStatus === "Closed"
-                    ? "text-danger"
-                    : "text-success"
-                }`}
-              >
-                {outlet.outletStatus === "Closed" ? (
-                  <span className="d-flex items-center">
-                    <CiLock size={25} /> Closed
+          <div className="mobile-top">
+            {" "}
+            {address && (
+              <div className="location-status">
+                <div className="quick-location">
+                  <span className="p-2 m-2 bg-gray-200 rounded-full">
+                    <CiLocationArrow1 />
                   </span>
-                ) : (
-                  <span className="d-flex items-center">
-                    <CiUnlock size={25} /> Open
+                  <span>
+                    {address.neighborhood || "Unknown locality"}, {""}
+                    {address.city || "Unknown city"}
                   </span>
-                )}
+                </div>
+                <div
+                  className={`outlet-status p-2 m-2 ${
+                    outlet.outletStatus === "Closed"
+                      ? "text-danger"
+                      : "text-success"
+                  }`}
+                >
+                  {outlet.outletStatus === "Closed" ? (
+                    <span className="d-flex items-center">
+                      <CiLock size={25} /> Closed
+                    </span>
+                  ) : (
+                    <span className="d-flex items-center">
+                      <CiUnlock size={25} /> Open
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-
-          <div className="mobile-search">
-            {isMobile && (
-              <Link to="/search" className="search-box w-full">
-                <span className="material-symbols-outlined fs-2">search</span>
-                <input type="text" placeholder="search here" />
-              </Link>
             )}
+            <div className="mobile-search">
+              {isMobile && (
+                <Link to="/search" className="search-box w-full">
+                  <span className="material-symbols-outlined fs-2">search</span>
+                  <input type="text" placeholder="search here" />
+                </Link>
+              )}
+            </div>
           </div>
-
           <div className="quick-cart">
             {!deliveryAvailable && (
               <div className="delivery-status rounded-lg">
@@ -270,9 +192,7 @@ const Home = () => {
             )}
             {cartItems.length > 0 ? <QuickCart /> : null}
           </div>
-          <Link to="/menu" className="homeBanner">
-            <img src={homeBanner} alt="banner" />
-          </Link>
+
           <div className="categories-box">
             {subCategories.map((subCategory) => (
               <Link
@@ -289,6 +209,7 @@ const Home = () => {
               </Link>
             ))}
           </div>
+
           <h2 className="fw-bold text-center p-3">Suggested for you</h2>
           <div className="random-products">
             <div className="product-grid">
@@ -338,9 +259,10 @@ const Home = () => {
               ))}
             </div>
           </div>
-          {isAuthenticated ? <LastOrderProducts /> : null } 
+
+          {isAuthenticated ? <LastOrderProducts /> : null}
           <LocationPicker />
-          <LiveOrderCard liveOrders={liveOrders} />
+          <LiveOrder liveOrders={liveOrders} showLiveOrder={showLiveOrder} />
         </div>
       )}
     </>

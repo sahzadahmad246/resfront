@@ -3,7 +3,7 @@ import { TextField, Button, CircularProgress } from "@mui/material";
 import "./UpdateShippingAddress.css";
 import { updateProfile } from "../../actions/userAction";
 import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import MetaData from "../Home/MetaData";
 
 const UpdateShippingAddress = ({ user, onEditComplete }) => {

@@ -5,7 +5,7 @@ import { getOrderDetails, clearErrors } from "../actions/orderAction";
 import Loader from "../components/Layout/Loader";
 import "./OrderDetails.css";
 import { format } from "date-fns";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { IoTimeOutline } from "react-icons/io5";
 import { MdLocationPin } from "react-icons/md";
 import { CgSandClock } from "react-icons/cg";

@@ -8,7 +8,7 @@ import {
   loadUser,
   clearErrors,
 } from "../../actions/userAction";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import "./UpdateProfile.css";
 import { useNavigate } from "react-router-dom";
 import LocationPicker from "./LocationPicker";

@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Account.css";
 import { useDispatch, useSelector } from "react-redux";
-import Profile from "../../Account/Profile";
-import Orders from "../../Account/Orders";
-import Address from "../../Account/Address";
+
 
 import Loader from "../Layout/Loader";
-import profilePic from "../../images/china.png";
-import { logout, clearErrors } from "../../actions/userAction";
-import { toast } from "react-toastify";
+
 import MetaData from "../../components/Home/MetaData";
 import AccountNav from "../../Account/AccountNav";
 const Account = () => {

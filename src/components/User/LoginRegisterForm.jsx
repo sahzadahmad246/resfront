@@ -4,7 +4,7 @@ import "./LoginRegisterForm.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, register, clearErrors } from "../../actions/userAction";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const LoginRegisterForm = () => {
   const { error, loading, isAuthenticated } = useSelector(

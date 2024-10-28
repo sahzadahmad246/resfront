@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { addItemsToCart } from "../../actions/cartAction";
 import "./Product.css";
 import vegIcon from "../../images/veg-icon.png";

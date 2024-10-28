@@ -3,7 +3,7 @@ import { TextField, Button, CircularProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { resetPassword, clearErrors } from "../../actions/userAction";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import "./ResetPassword.css";
 
 const ResetPassword = () => {

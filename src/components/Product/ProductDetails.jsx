@@ -3,6 +3,7 @@ import "./ProductDetails.css";
 import { Carousel } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-hot-toast";
 import {
   getProductDetails,
   newReview,

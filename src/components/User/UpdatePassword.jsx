@@ -5,7 +5,7 @@ import { updatePassword } from "../../actions/userAction";
 import { useNavigate } from "react-router-dom";
 import { UPDATE_PASSWORD_RESET } from "../../constants/userConstant";
 import "./UpdatePassword.css";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const UpdatePassword = () => {
   const dispatch = useDispatch();

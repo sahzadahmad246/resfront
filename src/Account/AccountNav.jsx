@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { logout, clearErrors } from "../actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDashboard } from "react-icons/md";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import "../components/Pages/Account.css";
 const AccountNav = () => {
   const { error, loading, user, isAuthenticated, token } = useSelector(
