@@ -19,7 +19,9 @@ import OrderStatusStepper from "../Admin/OrderStatusStepper";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { getOutletInfo } from "../actions/adminAction";
 import InvoicePDF from "./InvoicePDF";
+import io from "socket.io-client"; // Import Socket.IO
 
+const socket = io("https://resback-ql89.onrender.com");
 const OrderDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -39,11 +41,18 @@ const OrderDetails = () => {
   }, [dispatch, id, error]);
   
   useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(getOrderDetails(id));
-    }, 5000);
+    dispatch(getOrderDetails(id));
 
-    return () => clearInterval(interval);
+    // Listen for real-time order updates
+    socket.on("orderStatusUpdate", (update) => {
+      if (update.orderId === id) {
+        dispatch(getOrderDetails(id));
+      }
+    });
+
+    return () => {
+      socket.off("orderStatusUpdate");
+    };
   }, [dispatch, id]);
 
   const handleBack = () => {
@@ -82,7 +91,7 @@ const OrderDetails = () => {
   return (
     <>
       <MetaData title={`Order Id #${order?._id}`} />
-      {isInitialLoad ? (
+      {loading ? (
         <Loader />
       ) : (
         <div className="order-details-main">

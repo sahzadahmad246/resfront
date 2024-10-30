@@ -107,7 +107,9 @@ const Menu = () => {
                   value={filters.category}
                   onChange={(e) => applyFilter("category", e.target.value)}
                 >
-                  <option value="" className="bg-white">Cuisine</option>
+                  <option value="" className="bg-white">
+                    Cuisine
+                  </option>
                   {categories.map((category) => (
                     <option key={category} value={category}>
                       {category}
@@ -121,7 +123,9 @@ const Menu = () => {
                   value={filters.foodType}
                   onChange={(e) => applyFilter("foodType", e.target.value)}
                 >
-                  <option value="" className="bg-white">Food Type</option>
+                  <option value="" className="bg-white">
+                    Food Type
+                  </option>
                   {foodTypes.map((foodType) => (
                     <option key={foodType} value={foodType}>
                       {foodType}
@@ -136,7 +140,9 @@ const Menu = () => {
                     applyFilter("priceRange", JSON.parse(e.target.value))
                   }
                 >
-                  <option value="" className="bg-white">Price range</option>
+                  <option value="" className="bg-white">
+                    Price range
+                  </option>
                   {priceRanges.map((range) => (
                     <option
                       key={range.label}
@@ -149,11 +155,11 @@ const Menu = () => {
               </div>
               <div className="filter-type">
                 <select
-                className=""
+                  className=""
                   value={filters.subCategory}
                   onChange={(e) => applyFilter("subCategory", e.target.value)}
                 >
-                  <option value="" >Category</option>
+                  <option value="">Category</option>
                   {subCategories.map((subCategory) => (
                     <option key={subCategory} value={subCategory}>
                       {subCategory}
@@ -164,17 +170,17 @@ const Menu = () => {
             </div>
           </div>
         </div>
-        <div className="menu-right">
-          <div className="menu-item">
-            {loading ? (
-              <Loader />
-            ) : (
-              filteredProducts.map((product) => (
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className="menu-right">
+            <div className="menu-item">
+              {filteredProducts.map((product) => (
                 <Product key={product._id} product={product} />
-              ))
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

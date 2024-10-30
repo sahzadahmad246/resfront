@@ -29,6 +29,7 @@ export default function ConfirmOrder() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [codLoading, setCodLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [couponCode, setCouponCode] = useState("");
 
@@ -118,7 +119,7 @@ export default function ConfirmOrder() {
   };
 
   const placeCODOrder = async () => {
-    setLoading(true);
+    setCodLoading(true);
     const paymentData = {
       subtotal,
       deliveryCharge,
@@ -258,12 +259,12 @@ export default function ConfirmOrder() {
                 disabled={loading}
                 className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-300 disabled:opacity-50"
               >
-                {loading ? <CircularProgress size={25} /> : "Pay now"}
+                {loading ? <CircularProgress sx={{ color: "white" }} size={25} /> : "Pay now"}
               </button>
 
               <button
                 onClick={total <= 1000 ? placeCODOrder : null}
-                disabled={loading}
+                disabled={codLoading}
                 className={`w-full py-2 px-4 rounded transition duration-300 ${
                   total > 1000
                     ? "bg-gray-400 cursor-not-allowed"
@@ -272,8 +273,8 @@ export default function ConfirmOrder() {
               >
                 {total > 1000 ? (
                   "Cash on delivery not available"
-                ) : loading ? (
-                  <CircularProgress size={25} />
+                ) : codLoading ? (
+                  <CircularProgress sx={{ color: "white" }} size={25} />
                 ) : (
                   "Cash on delivery"
                 )}

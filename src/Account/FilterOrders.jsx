@@ -52,7 +52,12 @@ const FilterOrders = ({ filter, handleFilterChange }) => {
         </select>
       </div>
       <div className="last-30-day bg-white">
-        <select name="year" value={filter.year} onChange={handleFilterChange}>
+        <select
+          name="year"
+          className="bg-white"
+          value={filter.year}
+          onChange={handleFilterChange}
+        >
           <option value="">By Year</option>
           {[...Array(10)].map((_, i) => (
             <option key={i} value={new Date().getFullYear() - i}>

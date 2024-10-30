@@ -116,7 +116,7 @@
 }
 
 .product-row::-webkit-scrollbar {
-  height: 8px;
+  height: 0px;
 }
 .product-row::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
@@ -227,7 +227,7 @@
   }
 
   .categories-box::-webkit-scrollbar {
-    height: 1px;
+    height: 0px;
   }
   .categories-box::-webkit-scrollbar-thumb {
     background-color: #ccc;

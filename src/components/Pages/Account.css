@@ -25,7 +25,6 @@
 .authed-account {
   width: 100%;
   min-height: 85vh;
-
 }
 
 .authed-account .account {
@@ -81,6 +80,7 @@ p {
 @media (max-width: 768px) {
   .account-main {
     flex-direction: column;
+    min-height: unset;
   }
 
   .account-main a {
@@ -89,7 +89,9 @@ p {
   }
 
   .authed-account {
-    padding: 0px 5px;
+    padding: 0px 0px;
+
+    margin: 0;
   }
 
   .account-top {
@@ -101,7 +103,7 @@ p {
     background: #ecf0f3;
     color: #000;
     width: 100%;
-   
+  
   }
 
   .account-top img {
@@ -115,7 +117,6 @@ p {
     flex-direction: column;
     justify-content: start;
     margin: 0px 0px;
-
   }
 
   .account .account-left {

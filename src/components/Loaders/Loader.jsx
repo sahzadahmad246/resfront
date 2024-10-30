@@ -1,7 +1,7 @@
 import React from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import "./Loader.css"; // Remove this if no additional styling is needed
+import "./../Layout/Loader.css"; // Remove this if no additional styling is needed
 
 const Loader = () => {
   return (
