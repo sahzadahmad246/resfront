@@ -6,6 +6,7 @@ import vegIcon from "../../images/veg-icon.png";
 import nonVegIcon from "../../images/non-veg-icon.png";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../Layout/Loader";
+import HomeLoader from "../../../Loaders/HomeLoader";
 import { toast } from "react-hot-toast";
 import { clearErrors, getProducts } from "../../actions/productAction";
 import { getOutletInfo } from "../../actions/adminAction";
@@ -129,7 +130,7 @@ const Home = () => {
     <>
       {loading ? (
         <div className="loader-container">
-          <Loader />
+          <HomeLoader />
         </div>
       ) : (
         <div className="pb-20">
