@@ -30,9 +30,10 @@ const LoginRegisterForm = () => {
   };
   console.log(location.search);
 
-  const redirecting = location.search
-    ? location.search.split("=")[1]
-    : "/account";
+  const redirecting = location.search.includes("redirect=")
+  ? location.search.split("=")[1]
+  : location.state?.from?.pathname || location.pathname;
+
 
   useEffect(() => {
     if (error) {

@@ -6,9 +6,8 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useSelector((state) => state.user);
   const location = useLocation();
 
-  
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} />;
+    return <Navigate to="/login" state={{ from: location }} />; // Pass the `from` location state
   }
 
   return children;

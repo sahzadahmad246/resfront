@@ -10,6 +10,7 @@ import DashboardTop from "./DashboardTop";
 import CreateOffer from "./CreateOffer";
 import { COUPON_CREATE_RESET } from "../constants/couponConstant";
 import { FaPlusCircle, FaEllipsisV } from "react-icons/fa";
+import Loader from "../components/Layout/Loader";
 import {
   Table,
   TableBody,
@@ -137,7 +138,7 @@ const AdminOffers = () => {
           </div>
 
           {loading ? (
-            <p>Loading coupons...</p>
+            <Loader/>
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (

@@ -20,16 +20,17 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { getOutletInfo } from "../actions/adminAction";
 import InvoicePDF from "./InvoicePDF";
 import io from "socket.io-client"; // Import Socket.IO
-
+import { IoMdArrowBack, IoIosHelpCircleOutline } from "react-icons/io";
 const socket = io("https://resback-ql89.onrender.com");
 const OrderDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { order, error, loading } = useSelector((state) => state.orderDetails);
+
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { outlet } = useSelector((state) => state.getOutletInfo);
-
+  console.log(order)
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -39,7 +40,7 @@ const OrderDetails = () => {
     dispatch(getOutletInfo());
     setIsInitialLoad(false);
   }, [dispatch, id, error]);
-  
+
   useEffect(() => {
     dispatch(getOrderDetails(id));
 
@@ -96,17 +97,21 @@ const OrderDetails = () => {
       ) : (
         <div className="order-details-main">
           <div className="order-details">
-            <div className="forgot-password-top px-4">
+            <div className="order-details-top px-4">
               <span
                 className="material-symbols-outlined cursor-pointer"
                 onClick={handleBack}
+                title="Navigate up"
               >
-                arrow_back
+                <IoMdArrowBack />
               </span>
-              <p>Order Details</p>
-              <div className="d-flex items-center justify-center bg-success px-3 text-light rounded-full">
-                {order?.paymentInfo?.status}
-                <FaCheckDouble size={20} className="ps-2" />
+              <p title={`#${order._id}`}>Order Details</p>
+              <div
+                className="d-flex items-center justify-center  px-3  rounded-full"
+                title="Help"
+                onClick={() => window.location.href = `tel:${outlet.altPhone}`}
+              >
+                <IoIosHelpCircleOutline size={30} />
               </div>
             </div>
             <div className="order-details-1">
@@ -201,14 +206,6 @@ const OrderDetails = () => {
                     </h5>
                   </div>
                   <div className="order-details-3-3">
-                    <button className="d-flex items-center justify-center">
-                      <IoShareSocialOutline size={40} className="px-2" />
-                      Share
-                    </button>
-                    <button className="d-flex items-center justify-center">
-                      <IoHelpCircleOutline size={40} className="px-2" />
-                      Help
-                    </button>
                     <PDFDownloadLink
                       document={<InvoicePDF order={order} outlet={outlet} />}
                       fileName={`invoice_${order._id}.pdf`}
@@ -217,10 +214,14 @@ const OrderDetails = () => {
                         loading ? (
                           "Loading document..."
                         ) : (
-                          <button className="d-flex items-center justify-center">
-                            <MdOutlineFileDownload size={40} className="px-2" />
-                            Download Invoice
-                          </button>
+                          <div className="button-box">
+                            <span>
+                              <MdOutlineFileDownload size={25} />
+                            </span>
+                            <button className="d-flex items-center justify-center">
+                              Download Invoice
+                            </button>
+                          </div>
                         )
                       }
                     </PDFDownloadLink>

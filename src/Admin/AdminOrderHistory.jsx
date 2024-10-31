@@ -11,6 +11,7 @@ import { CSVLink } from "react-csv";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllOrders } from "../actions/orderAction";
 import OrderStatusStepper from "./OrderStatusStepper";
+import Loader from "../components/Layout/Loader";
 import {
   getSingleUser,
   clearErrors as singleUserClearErrors,
@@ -115,7 +116,9 @@ const AdminOrderHistory = () => {
       CustomerName: order.deliveryInfo.name,
       Phone: order.deliveryInfo.phone,
       Address: `${order.deliveryInfo.address}, ${order.deliveryInfo.city}, ${order.deliveryInfo.pincode}`,
-      OrderDate: order.createdAt ? format(new Date(order.createdAt), "dd/MM/yyyy hh:mm a") : "N/A",
+      OrderDate: order.createdAt
+        ? format(new Date(order.createdAt), "dd/MM/yyyy hh:mm a")
+        : "N/A",
       TotalPrice: `₹${order.totalPrice}`,
     }));
 
@@ -130,169 +133,201 @@ const AdminOrderHistory = () => {
           <AdminNav />
         </div>
         <div className="dashboard-right">
-          <div className="admin-order-history">
-            <div className="order-history-filters">
-              <div className="filter-buttons">
-                <button
-                  className={filterType === "last1day" ? "active-filter" : ""}
-                  onClick={() => setFilterType("last1day")}
-                >
-                  1D
-                </button>
-                <button
-                  className={filterType === "last7days" ? "active-filter" : ""}
-                  onClick={() => setFilterType("last7days")}
-                >
-                  7D
-                </button>
-                <button
-                  className={filterType === "last1month" ? "active-filter" : ""}
-                  onClick={() => setFilterType("last1month")}
-                >
-                  1M
-                </button>
-                <button
-                  className={filterType === "Delivered" ? "active-filter" : ""}
-                  onClick={() => setFilterType("Delivered")}
-                >
-                  Delivered
-                </button>
-                <button
-                  className={filterType === "Rejected" ? "active-filter" : ""}
-                  onClick={() => setFilterType("Rejected")}
-                >
-                  Rejected
-                </button>
-                <button
-                  className={filterType === "all" ? "active-filter" : ""}
-                  onClick={() => setFilterType("all")}
-                >
-                  All Orders
-                </button>
-                {/* Add custom date range filter button */}
-              </div>
-              <div className="search-box">
-                <input
-                  type="text"
-                  placeholder="Search orders"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
-              </div>
-              <div className="export-button">
-                <CSVLink
-                  data={exportCSVData()}
-                  filename={`order-history-${Date.now()}.csv`}
-                  className="btn btn-primary"
-                >
-                  Export to CSV
-                </CSVLink>
-              </div>
-            </div>
-            <div className="order-list">
-              {loading ? (
-                <div className="loading-spinner">
-                  <CircularProgress />
+          {loading ? (
+            <Loader />
+          ) : (
+            <div className="admin-order-history">
+              <div className="order-history-filters">
+                <div className="filter-buttons">
+                  <button
+                    className={filterType === "last1day" ? "active-filter" : ""}
+                    onClick={() => setFilterType("last1day")}
+                  >
+                    1D
+                  </button>
+                  <button
+                    className={
+                      filterType === "last7days" ? "active-filter" : ""
+                    }
+                    onClick={() => setFilterType("last7days")}
+                  >
+                    7D
+                  </button>
+                  <button
+                    className={
+                      filterType === "last1month" ? "active-filter" : ""
+                    }
+                    onClick={() => setFilterType("last1month")}
+                  >
+                    1M
+                  </button>
+                  <button
+                    className={
+                      filterType === "Delivered" ? "active-filter" : ""
+                    }
+                    onClick={() => setFilterType("Delivered")}
+                  >
+                    Delivered
+                  </button>
+                  <button
+                    className={filterType === "Rejected" ? "active-filter" : ""}
+                    onClick={() => setFilterType("Rejected")}
+                  >
+                    Rejected
+                  </button>
+                  <button
+                    className={filterType === "all" ? "active-filter" : ""}
+                    onClick={() => setFilterType("all")}
+                  >
+                    All Orders
+                  </button>
+                  {/* Add custom date range filter button */}
                 </div>
-              ) : filteredOrders.length === 0 ? (
-                <div className="no-orders">
-                  <FaBox size={50} color="#ff004d" />
-                  <p>No orders found</p>
+                <div className="search-box">
+                  <input
+                    type="text"
+                    placeholder="Search orders"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                  />
                 </div>
-              ) : (
-                <div>
-                  {filteredOrders.map((order) => (
-                    <div key={order._id} className="live-order-box">
-                      <div className="live-order-box-1">
-                        <span className="live-order-box-1-1">
-                          {users[order.user] &&
+                <div className="export-button">
+                  <CSVLink
+                    data={exportCSVData()}
+                    filename={`order-history-${Date.now()}.csv`}
+                    className="btn btn-primary"
+                  >
+                    Export to CSV
+                  </CSVLink>
+                </div>
+              </div>
+              <div className="order-list">
+                {loading ? (
+                  <div className="loading-spinner">
+                    <CircularProgress />
+                  </div>
+                ) : filteredOrders.length === 0 ? (
+                  <div className="no-orders">
+                    <FaBox size={50} color="#ff004d" />
+                    <p>No orders found</p>
+                  </div>
+                ) : (
+                  <div>
+                    {filteredOrders.map((order) => (
+                      <div key={order._id} className="live-order-box">
+                        <div className="live-order-box-1">
+                          <span className="live-order-box-1-1">
+                            {users[order.user] &&
                             users[order.user].avatar &&
                             users[order.user].avatar.url ? (
-                            <img
-                              src={users[order.user].avatar.url}
-                              alt={users[order.user].name}
-                            />
-                          ) : (
-                            "Loading avatar..."
-                          )}
-                          <span className="px-2 d-flex flex-col">
-                            <span className="fs-5 fw-bold">
-                              {users[order.user]
-                                ? users[order.user].name
-                                : "Loading..."}
-                            </span>
-                          </span>
-                        </span>
-                        <div className="d-flex flex-col items-end">
-                          <span>
-                            <strong>Order value</strong> ₹{order.totalPrice}
-                          </span>
-                          <span className="text-slate-900">ID: #{order._id}</span>
-                        </div>
-                      </div>
-                      <OrderStatusStepper
-                        statusHistory={order.statusHistory}
-                        createdAt={order.createdAt}
-                      />
-                      <div className="live-order-box-2">
-                        <div className="live-order-box-2-left">
-                          <span className="d-flex items-center">
-                            <span className="bg-gray-200 p-2 m-2 rounded-full">
-                              <MdOutlineLocationOn size={25} />
-                            </span>
-                            <span className="text-slate-500">
-                              {order.deliveryInfo.address} {order.deliveryInfo.city} {order.deliveryInfo.pincode}
-                            </span>
-                          </span>
-                          <span className="d-flex items-center">
-                            <span className="bg-gray-200 p-2 m-2 rounded-full">
-                              <IoIosCall size={25} />
-                            </span>
-                            <a href={`tel:${order.deliveryInfo.phone}`} className="text-slate-500">
-                              {order.deliveryInfo.phone}
-                            </a>
-                          </span>
-                        </div>
-                        <div className="live-order-box-2-right">
-                          {order.orderItems?.map((item) => (
-                            <div key={item.product} className="live-order-item">
-                              <span className="order-item-name ps-2 text-slate-500">
-                                {item.name}
+                              <img
+                                src={users[order.user].avatar.url}
+                                alt={users[order.user].name}
+                              />
+                            ) : (
+                              "Loading avatar..."
+                            )}
+                            <span className="px-2 d-flex flex-col">
+                              <span className="fs-5 fw-bold">
+                                {users[order.user]
+                                  ? users[order.user].name
+                                  : "Loading..."}
                               </span>
+                            </span>
+                          </span>
+                          <div className="d-flex flex-col items-end">
+                            <span>
+                              <strong>Order value</strong> ₹{order.totalPrice}
+                            </span>
+                            <span className="text-slate-900">
+                              ID: #{order._id}
+                            </span>
+                          </div>
+                        </div>
+                        <OrderStatusStepper
+                          statusHistory={order.statusHistory}
+                          createdAt={order.createdAt}
+                        />
+                        <div className="live-order-box-2">
+                          <div className="live-order-box-2-left">
+                            <span className="d-flex items-center">
+                              <span className="bg-gray-200 p-2 m-2 rounded-full">
+                                <MdOutlineLocationOn size={25} />
+                              </span>
+                              <span className="text-slate-500">
+                                {order.deliveryInfo.address}{" "}
+                                {order.deliveryInfo.city}{" "}
+                                {order.deliveryInfo.pincode}
+                              </span>
+                            </span>
+                            <span className="d-flex items-center">
+                              <span className="bg-gray-200 p-2 m-2 rounded-full">
+                                <IoIosCall size={25} />
+                              </span>
+                              <a
+                                href={`tel:${order.deliveryInfo.phone}`}
+                                className="text-slate-500"
+                              >
+                                {order.deliveryInfo.phone}
+                              </a>
+                            </span>
+                          </div>
+                          <div className="live-order-box-2-right">
+                            {order.orderItems?.map((item) => (
+                              <div
+                                key={item.product}
+                                className="live-order-item"
+                              >
+                                <span className="order-item-name ps-2 text-slate-500">
+                                  {item.name}
+                                </span>
+                                <span>
+                                  <span className="order-item-price ps-2">
+                                    ₹{item.price}
+                                  </span>
+                                  <span className="order-item-quantity ps-2">
+                                    x {item.quantity}
+                                  </span>
+                                  <span className="order-item-total ps-2">
+                                    ₹{item.price * item.quantity}
+                                  </span>
+                                </span>
+                              </div>
+                            ))}
+                            <div className="live-order-box-2-right-1 d-flex justify-between">
                               <span>
-                                <span className="order-item-price ps-2">
-                                  ₹{item.price}
+                                Total Bill{" "}
+                                <span className="px-2">
+                                  ₹{order.totalPrice}
                                 </span>
-                                <span className="order-item-quantity ps-2">
-                                  x {item.quantity}
-                                </span>
-                                <span className="order-item-total ps-2">
-                                  ₹{item.price * item.quantity}
+                                <span
+                                  className={
+                                    order.paymentInfo.status === "paid"
+                                      ? "text-success"
+                                      : "text-danger"
+                                  }
+                                >
+                                  {order.paymentInfo.status}
                                 </span>
                               </span>
                             </div>
-                          ))}
-                          <div className="live-order-box-2-right-1 d-flex justify-between">
-                            <span>
-                              Total Bill{" "}
-                              <span className="px-2">₹{order.totalPrice}</span>
-                              <span className={order.paymentInfo.status === "paid" ? "text-success" : "text-danger"}>
-                                {order.paymentInfo.status}
-                              </span>
+                            <span className="text-green-600 px-3">
+                              {order.deliveredAt
+                                ? `Order was delivered on ${format(
+                                    new Date(order.deliveredAt),
+                                    "dd/MM/yyyy, 'at' hh:mm a"
+                                  )}`
+                                : "Order was not delivered"}
                             </span>
                           </div>
-                          <span className="text-green-600 px-3">
-                            {order.deliveredAt ? `Order was delivered on ${format(new Date(order.deliveredAt), "dd/MM/yyyy, 'at' hh:mm a")}` : "Order was not delivered"}
-                          </span>
-
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

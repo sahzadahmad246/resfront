@@ -39,7 +39,7 @@ export default function ConfirmOrder() {
   const totalQuantity = cartItems.reduce((acc, curr) => acc + curr.quantity, 0);
   const deliveryCharge = subtotal > 500 ? 0 : 40;
   const discount = couponValue || 0;
-  const gst = Math.round(subtotal * 0.05); // 5% GST
+  const gst = Math.round(subtotal * 0.05); 
   const total = Math.round(subtotal + deliveryCharge - discount + gst);
 
   useEffect(() => {
