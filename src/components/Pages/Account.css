@@ -81,10 +81,13 @@ p {
   .account-main {
     flex-direction: column;
     min-height: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .account-main a {
-    width: 100%;
+    width: 80%;
     border-radius: 0px;
   }
 
@@ -103,7 +106,6 @@ p {
     background: #ecf0f3;
     color: #000;
     width: 100%;
-  
   }
 
   .account-top img {

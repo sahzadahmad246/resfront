@@ -1,4 +1,6 @@
+
 import axios from "axios";
+
 
 import {
   LOGIN_REQUEST,
@@ -78,12 +80,9 @@ export const register = (formData) => async (dispatch) => {
 export const loadUser = () => async (dispatch) => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
-    const { data } = await axios.get(
-      `https://resback-ql89.onrender.com/api/v1/me`,
-      {
-        withCredentials: true,
-      }
-    );
+    const { data } = await axios.get(`https://resback-ql89.onrender.com/api/v1/me`, {
+      withCredentials: true,
+    });
     dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
   } catch (error) {
     dispatch({
@@ -173,6 +172,7 @@ export const updatePassword = (passwords) => async (dispatch) => {
   }
 };
 
+
 // Forgot Password Action
 export const forgotPassword = (email) => async (dispatch) => {
   try {
@@ -201,40 +201,45 @@ export const forgotPassword = (email) => async (dispatch) => {
 };
 
 // Reset Password Action
-export const resetPassword =
-  (token, password, confirmPassword) => async (dispatch) => {
-    try {
-      dispatch({ type: RESET_PASSWORD_REQUEST });
+export const resetPassword = (token, password, confirmPassword) => async (dispatch) => {
+  try {
+    dispatch({ type: RESET_PASSWORD_REQUEST });
 
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
 
-      const { data } = await axios.put(
-        `https://resback-ql89.onrender.com/api/v1/password/reset/${token}`,
-        { password, confirmPassword },
-        config
-      );
+    const { data } = await axios.put(
+      `https://resback-ql89.onrender.com/api/v1/password/reset/${token}`,
+      { password, confirmPassword },
+      config
+    );
 
-      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data.success });
-    } catch (error) {
-      dispatch({
-        type: RESET_PASSWORD_FAIL,
-        payload: error.response.data.message,
-      });
-    }
-  };
+    dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data.success });
+  } catch (error) {
+    dispatch({
+      type: RESET_PASSWORD_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
 
 // Logout Action
-export const logout = () => (dispatch) => {
-  // Clear the cookie on the frontend
-  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // Clear cookie // Dispatch the logout success action
-
-  dispatch({ type: LOGOUT_SUCCESS });
+export const logout = () => async (dispatch) => {
+  try {
+    await axios.get(`https://resback-ql89.onrender.com/api/v1/logout`, {
+      withCredentials: true,
+    });
+    dispatch({ type: LOGOUT_SUCCESS });
+  } catch (error) {
+    dispatch({ type: LOGOUT_FAIL, payload: error.response.data.message });
+  }
 };
+
 
 // Clear Errors
 export const clearErrors = () => async (dispatch) => {

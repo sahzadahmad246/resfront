@@ -31,16 +31,15 @@ const LoginRegisterForm = () => {
   };
 
   const redirecting = location.search.includes("redirect=")
-    ? location.search.split("=")[1]
-    : "/account"; 
-  
+    ? location.search.split("=")[1]
+    : "/account";
 
   useEffect(() => {
     if (error) {
       toast.error(error);
       dispatch(clearErrors());
     } else if (isAuthenticated && !toastShown) {
-      setToastShown(true); 
+      setToastShown(true);
       toast.success("Logged in successfully");
       if (redirecting === "shipping") {
         navigate("/shipping");
