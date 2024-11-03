@@ -31,17 +31,16 @@ const LoginRegisterForm = () => {
   };
 
   const redirecting = location.search.includes("redirect=")
-    ? location.search.split("=")[1]
-    : location.state?.from?.pathname === "/login"
-    ? "/account"
-    : location.state?.from?.pathname || location.pathname;
+    ? location.search.split("=")[1]
+    : "/account"; 
+  
 
   useEffect(() => {
     if (error) {
       toast.error(error);
       dispatch(clearErrors());
     } else if (isAuthenticated && !toastShown) {
-      setToastShown(true); // Set the flag to true after showing the toast
+      setToastShown(true); 
       toast.success("Logged in successfully");
       if (redirecting === "shipping") {
         navigate("/shipping");
@@ -49,7 +48,7 @@ const LoginRegisterForm = () => {
         navigate(redirecting);
       }
     }
-  }, [error, isAuthenticated, dispatch, navigate, redirecting, toastShown]); // Added toastShown to dependencies
+  }, [error, isAuthenticated, dispatch, navigate, redirecting, toastShown]);
 
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
