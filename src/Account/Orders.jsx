@@ -171,12 +171,11 @@ const Orders = () => {
                         className="my-order-item"
                       >
                         <div className="d-flex items-center">
-                          {/* Displaying image from order.orderItems */}
                           <img
                             src={
                               order.orderItems &&
                               order.orderItems.length > 0 &&
-                              order.orderItems[0].image.url // Assuming the first item's image URL
+                              order.orderItems[0].image.url
                             }
                             alt="pic"
                           />
@@ -200,7 +199,10 @@ const Orders = () => {
                             className={
                               order.orderStatus === "Delivered"
                                 ? "bg-success px-2 rounded-full text-light"
-                                : "bg-rose-500 px-2 py-1 rounded-full text-light"
+                                : order.orderStatus === "Rejected" ||
+                                  order.orderStatus === "cancelled"
+                                ? "bg-danger px-2 rounded-full text-light"
+                                : "bg-yellow-500 px-2 rounded-full text-light"
                             }
                           >
                             {order.orderStatus}

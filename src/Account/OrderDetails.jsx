@@ -30,7 +30,7 @@ const OrderDetails = () => {
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { outlet } = useSelector((state) => state.getOutletInfo);
-  console.log(order)
+
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -74,6 +74,8 @@ const OrderDetails = () => {
 
   const getStatusMessage = (status) => {
     switch (status) {
+      case "Placed":
+        return "Order is placed, pleae wait for resturant to accept it.";
       case "Accepted":
         return "Order is accepted and the restaurant is preparing.";
       case "Ready":
@@ -84,6 +86,8 @@ const OrderDetails = () => {
         return "Your order was delivered.";
       case "Rejected":
         return "Oops!  order rejected. Call restaurant to know why.";
+      case "cancelled":
+        return "Order was cancelled";
       default:
         return "";
     }
@@ -109,7 +113,9 @@ const OrderDetails = () => {
               <div
                 className="d-flex items-center justify-center  px-3  rounded-full"
                 title="Help"
-                onClick={() => window.location.href = `tel:${outlet.altPhone}`}
+                onClick={() =>
+                  (window.location.href = `tel:${outlet.altPhone}`)
+                }
               >
                 <IoIosHelpCircleOutline size={30} />
               </div>
@@ -136,7 +142,10 @@ const OrderDetails = () => {
                     className={
                       order.orderStatus === "Delivered"
                         ? "text-success"
-                        : "text-rose-700"
+                        : order.orderStatus === "Rejected" ||
+                          order.orderStatus === "cancelled"
+                        ? "text-danger"
+                        : "text-yellow-500"
                     }
                   >
                     <span>{getStatusMessage(order?.orderStatus)}</span>

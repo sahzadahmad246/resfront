@@ -5,21 +5,16 @@ import { CiSearch } from "react-icons/ci";
 import DashboardTop from "./DashboardTop";
 import MetaData from "../components/Home/MetaData";
 import { useDispatch, useSelector } from "react-redux";
-import { format } from "date-fns";
 import newOrderSound from "../images/newOrderAlert.mp3";
 import { IoMdClose } from "react-icons/io";
-
 import {
   getAllOrders,
   clearErrors,
   updateOrderStatus,
 } from "../actions/orderAction";
-//
-import {
-  getSingleUser,
-  clearErrors as singleUserClearErrors,
-} from "../actions/adminAction";
+import { getSingleUser } from "../actions/adminAction";
 import { MdOutlineLocationOn } from "react-icons/md";
+import { format } from "date-fns";
 import { BsPrinter } from "react-icons/bs";
 import { IoIosCall } from "react-icons/io";
 import { FaBox } from "react-icons/fa";
@@ -29,6 +24,8 @@ import OrderStatusStepper from "./OrderStatusStepper";
 import OrderBill from "./OrderBill";
 import Loader from "../components/Layout/Loader";
 import io from "socket.io-client";
+import FilteredOrders from "./OrderFilter"; // Import the new component
+
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { error, orders, loading } = useSelector((state) => state.allOrders);
@@ -45,54 +42,34 @@ const AdminOrders = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Initialize Socket.IO
-    const newSocket = io("https://resback-ql89.onrender.com"); // Change to your backend URL
-    setSocket(newSocket);
+    const newSocket = io("https://resback-ql89.onrender.com");
 
-    // Listen for order updates
     newSocket.on("orders", (orders) => {
-      setFilteredOrders(orders); // Update the orders on initial load
+      setFilteredOrders(orders); // set initial orders
     });
 
     newSocket.on("orderUpdated", (updatedOrder) => {
-      setFilteredOrders((prevOrders) => {
-        // Find and update the specific order in the list
-        return prevOrders.map((order) =>
+      setFilteredOrders((prevOrders) =>
+        prevOrders.map((order) =>
           order._id === updatedOrder._id ? updatedOrder : order
-        );
-      });
+        )
+      );
     });
 
     return () => {
-      newSocket.disconnect(); // Cleanup on unmount
+      newSocket.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    // Dispatch action to fetch initial orders
     dispatch(getAllOrders());
   }, [dispatch]);
 
   useEffect(() => {
-    // Handle errors and loading states as necessary
-    if (error) {
+    if (error || updateError) {
       dispatch(clearErrors());
     }
-  }, [error, dispatch]);
-
-  useEffect(() => {
-    const fetchOrders = () => {
-      dispatch(getAllOrders());
-    };
-
-    fetchOrders();
-
-    const intervalId = setInterval(() => {
-      fetchOrders();
-    }, 2000);
-
-    return () => clearInterval(intervalId);
-  }, [dispatch]);
+  }, [error, updateError, dispatch]);
 
   useEffect(() => {
     if (orders && orders.length > 0) {
@@ -102,69 +79,29 @@ const AdminOrders = () => {
         }
       });
 
-      // Update filteredOrders with all orders after fetching them
-      setFilteredOrders([...orders]);
+      const today = new Date();
+      const formattedToday = format(today, "yyyy-MM-dd");
+      const todayOrders = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return format(orderDate, "yyyy-MM-dd") === formattedToday;
+      });
 
-      const placedOrders = orders.filter(
+      setFilteredOrders(todayOrders);
+      const placedOrders = todayOrders.filter(
         (order) => order.orderStatus === "Placed"
       );
       setNewOrders(placedOrders);
 
-      if (orders.length > prevOrdersLength && placedOrders.length > 0) {
+      if (todayOrders.length > prevOrdersLength && placedOrders.length > 0) {
         const audio = new Audio(newOrderSound);
         audio.play();
       }
-      setPrevOrdersLength(orders.length);
+      setPrevOrdersLength(todayOrders.length);
     }
-
-    if (error) {
-      dispatch(clearErrors());
-    }
-
-    if (updateError) {
-      dispatch(clearErrors());
-    }
-  }, [dispatch, error, orders, users, updateError, prevOrdersLength]);
-
-  useEffect(() => {
-    // Apply filtering based on activeStatus and searchTerm
-    const filterOrders = () => {
-      let filtered = [...orders];
-
-      if (activeStatus !== "All") {
-        filtered = filtered.filter(
-          (order) => order.orderStatus === activeStatus
-        );
-      }
-
-      if (searchTerm.trim() !== "") {
-        const normalizedSearchTerm = searchTerm.toLowerCase().trim();
-        filtered = filtered.filter((order) => {
-          const { user, deliveryInfo, _id } = order;
-          const userName = users[user]?.name.toLowerCase();
-          const userPhone = deliveryInfo.phone.toLowerCase();
-          return (
-            userName.includes(normalizedSearchTerm) ||
-            userPhone.includes(normalizedSearchTerm) ||
-            _id.toLowerCase().includes(normalizedSearchTerm)
-          );
-        });
-      }
-
-      // Sort orders in descending order based on creation date
-      filtered = filtered.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-
-      setFilteredOrders(filtered);
-    };
-
-    filterOrders();
-  }, [searchTerm, orders, users, activeStatus]);
+  }, [orders, users, dispatch, prevOrdersLength]);
 
   const handleOrderStatusChange = (orderId, currentStatus) => {
     setLoadingButton(true);
-
     let nextStatus = "";
 
     switch (currentStatus) {
@@ -182,6 +119,18 @@ const AdminOrders = () => {
     }
 
     dispatch(updateOrderStatus(orderId, nextStatus))
+      .then(() => {
+        dispatch(getAllOrders());
+        setLoadingButton(false);
+      })
+      .catch(() => {
+        setLoadingButton(false);
+      });
+  };
+
+  const handleCancelOrder = (orderId) => {
+    setLoadingButton(true);
+    dispatch(updateOrderStatus(orderId, "cancelled"))
       .then(() => {
         dispatch(getAllOrders());
         setLoadingButton(false);
@@ -225,6 +174,13 @@ const AdminOrders = () => {
               </div>
             </div>
           )}
+          <FilteredOrders
+            orders={orders}
+            activeStatus={activeStatus}
+            searchTerm={searchTerm}
+            users={users}
+            setFilteredOrders={setFilteredOrders}
+          />
           <div className="live-order-top">
             <div className="live-order-top-1">
               <span
@@ -251,7 +207,16 @@ const AdminOrders = () => {
               >
                 Delivered
               </span>
+              <span
+                onClick={() => setActiveStatus("Undelivered")}
+                className={
+                  activeStatus === "Undelivered" ? "active-status" : ""
+                }
+              >
+                Undelivered
+              </span>
             </div>
+
             <div className="live-order-top-2">
               <CiSearch />
               <input
@@ -334,6 +299,22 @@ const AdminOrders = () => {
                             Call Customer
                           </a>
                         </span>
+                        {order.orderStatus !== "Delivered" &&
+                          order.orderStatus !== "cancelled" &&
+                          order.orderStatus !== "Rejected" && (
+                            <Button
+                              sx={{
+                                border: "1px solid red",
+                                color: "red",
+                                "&:hover": {
+                                  backgroundColor: "rgba(255, 0, 0, 0.1)",
+                                },
+                              }}
+                              onClick={() => handleCancelOrder(order._id)}
+                            >
+                              Cancel order
+                            </Button>
+                          )}
                       </div>
                       <div className="live-order-box-2-right">
                         <>
@@ -365,8 +346,15 @@ const AdminOrders = () => {
                                     ? "text-success"
                                     : "text-danger"
                                 }
+                                title={
+                                  order.paymentInfo.status === "paid"
+                                    ? "Paid Online"
+                                    : "Cash on delivery"
+                                }
                               >
-                                {order.paymentInfo.status}
+                                {order.paymentInfo.status === "paid"
+                                  ? "Paid"
+                                  : "COD"}
                               </span>
                             </span>
                             <span className="d-flex items-center text-blue-600">
@@ -402,6 +390,14 @@ const AdminOrders = () => {
                                   order.deliveredAt,
                                   "dd/MM/yyyy, 'at' hh:mm a"
                                 )}
+                              </span>
+                            ) : order.orderStatus === "cancelled" ? (
+                              <span className="text-red-600">
+                                This order was cancelled
+                              </span>
+                            ) : order.orderStatus === "Rejected" ? (
+                              <span className="text-red-600">
+                                You Rejected this order
                               </span>
                             ) : (
                               <Button
