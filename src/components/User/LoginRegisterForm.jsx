@@ -14,6 +14,7 @@ const LoginRegisterForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const [toastShown, setToastShown] = useState(false); // Flag for toast message
 
   const switchForm = () => {
     setIsLogin(!isLogin);
@@ -28,26 +29,27 @@ const LoginRegisterForm = () => {
 
     await dispatch(login(formData));
   };
-  console.log(location.search);
 
   const redirecting = location.search.includes("redirect=")
-  ? location.search.split("=")[1]
-  : location.state?.from?.pathname || location.pathname;
-
+    ? location.search.split("=")[1]
+    : location.state?.from?.pathname === "/login"
+    ? "/account"
+    : location.state?.from?.pathname || location.pathname;
 
   useEffect(() => {
     if (error) {
       toast.error(error);
       dispatch(clearErrors());
-    } else if (isAuthenticated) {
+    } else if (isAuthenticated && !toastShown) {
+      setToastShown(true); // Set the flag to true after showing the toast
+      toast.success("Logged in successfully");
       if (redirecting === "shipping") {
         navigate("/shipping");
       } else {
         navigate(redirecting);
-        toast.success("Logged in successfully");
       }
     }
-  }, [error, isAuthenticated, dispatch, navigate, redirecting, location]);
+  }, [error, isAuthenticated, dispatch, navigate, redirecting, toastShown]); // Added toastShown to dependencies
 
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
@@ -64,25 +66,33 @@ const LoginRegisterForm = () => {
 
   return (
     <div className="main-login">
+           {" "}
       <div className="form-container">
+               {" "}
         <div className="slider-container">
+                   {" "}
           <div
             className={`slider ${isLogin ? "slide-left" : "slide-right"}`}
           ></div>
+                   {" "}
           <h2
             className={`login-register-header ${
               isLogin ? "slide-left" : "slide-right"
             }`}
           >
-            {isLogin ? "Login" : "Register"}
+                        {isLogin ? "Login" : "Register"}         {" "}
           </h2>
+                 {" "}
         </div>
+               {" "}
         <form
           onSubmit={isLogin ? handleLoginSubmit : handleRegisterSubmit}
           className={`form ${isLogin ? "slide-left" : "slide-right"}`}
         >
+                   {" "}
           {!isLogin && (
             <>
+                           {" "}
               <TextField
                 id="register-name"
                 name="register-name"
@@ -93,6 +103,7 @@ const LoginRegisterForm = () => {
                 margin="normal"
                 placeholder="Enter your name"
               />
+                           {" "}
               <TextField
                 id="register-email"
                 name="register-email"
@@ -104,6 +115,7 @@ const LoginRegisterForm = () => {
                 margin="normal"
                 placeholder="Enter your email"
               />
+                           {" "}
               <TextField
                 id="register-phone"
                 name="register-phone"
@@ -115,6 +127,7 @@ const LoginRegisterForm = () => {
                 margin="normal"
                 placeholder="Enter your phone number"
               />
+                           {" "}
               <TextField
                 id="register-password"
                 name="register-password"
@@ -126,10 +139,13 @@ const LoginRegisterForm = () => {
                 margin="normal"
                 placeholder="Set a password"
               />
+                         {" "}
             </>
           )}
+                   {" "}
           {isLogin && (
             <>
+                           {" "}
               <TextField
                 id="login-phone"
                 name="login-phone"
@@ -141,6 +157,7 @@ const LoginRegisterForm = () => {
                 margin="normal"
                 placeholder="Enter your phone number"
               />
+                           {" "}
               <TextField
                 id="login-password"
                 name="login-password"
@@ -152,11 +169,14 @@ const LoginRegisterForm = () => {
                 margin="normal"
                 placeholder="Enter your password"
               />
+                           {" "}
               <Link to="/password/forgot" className="p-1 text-right">
-                Forgot Password?
+                                Forgot Password?              {" "}
               </Link>
+                         {" "}
             </>
           )}
+                   {" "}
           <Button
             type="submit"
             variant="contained"
@@ -166,15 +186,23 @@ const LoginRegisterForm = () => {
             disabled={loading}
             endIcon={loading && <CircularProgress size={20} color="inherit" />}
           >
-            {isLogin ? "Login" : "Register"}
+                        {isLogin ? "Login" : "Register"}         {" "}
           </Button>
+                 {" "}
         </form>
+               {" "}
         <div className="button-box">
+                   {" "}
           <Button onClick={switchForm} variant="text" color="secondary">
+                       {" "}
             {isLogin ? "Not an account? Register" : "Already registered? Login"}
+                     {" "}
           </Button>
+                 {" "}
         </div>
+             {" "}
       </div>
+         {" "}
     </div>
   );
 };
