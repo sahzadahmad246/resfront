@@ -18,6 +18,7 @@ import {
   getSingleUser,
   clearErrors as singleUserClearErrors,
 } from "../actions/adminAction";
+import { getOutletInfo } from "../actions/adminAction";
 
 const AdminOrderHistory = () => {
   const dispatch = useDispatch();
@@ -28,9 +29,11 @@ const AdminOrderHistory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const { outlet } = useSelector((state) => state.getOutletInfo);
   // console.log(orders);
   useEffect(() => {
     dispatch(getAllOrders());
+    dispatch(getOutletInfo());
     if (orders && orders.length > 0) {
       orders.forEach((order) => {
         if (!users[order.user]) {
@@ -65,7 +68,11 @@ const AdminOrderHistory = () => {
         filtered = searchOrders(searchTerm);
         break;
       case "Rejected":
-        filtered = orders.filter((order) => order.orderStatus === "Rejected" || order.orderStatus === "cancelled");
+        filtered = orders.filter(
+          (order) =>
+            order.orderStatus === "Rejected" ||
+            order.orderStatus === "cancelled"
+        );
         break;
       case "Delivered":
       default:
@@ -111,21 +118,6 @@ const AdminOrderHistory = () => {
     const searchTerm = event.target.value;
     setSearchTerm(searchTerm);
     setFilterType("search");
-  };
-
-  const exportCSVData = () => {
-    const csvData = filteredOrders.map((order) => ({
-      OrderID: order._id,
-      CustomerName: order.deliveryInfo.name,
-      Phone: order.deliveryInfo.phone,
-      Address: `${order.deliveryInfo.address}, ${order.deliveryInfo.city}, ${order.deliveryInfo.pincode}`,
-      OrderDate: order.createdAt
-        ? format(new Date(order.createdAt), "dd/MM/yyyy hh:mm a")
-        : "N/A",
-      TotalPrice: `₹${order.totalPrice}`,
-    }));
-
-    return csvData;
   };
 
   return (
@@ -202,6 +194,7 @@ const AdminOrderHistory = () => {
                     isOpen={isExportModalOpen}
                     onClose={() => setIsExportModalOpen(false)}
                     orders={filteredOrders}
+                    outlet={outlet}
                   />
                 </div>
               </div>
@@ -315,7 +308,13 @@ const AdminOrderHistory = () => {
                                 </span>
                               </span>
                             </div>
-                            <span className="text-green-600 px-3">
+                            <span
+                              className={
+                                order.status === "Delivered"
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }
+                            >
                               {order.deliveredAt
                                 ? `Order was delivered on ${format(
                                     new Date(order.deliveredAt),

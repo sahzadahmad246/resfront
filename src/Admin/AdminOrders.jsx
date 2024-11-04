@@ -7,12 +7,13 @@ import MetaData from "../components/Home/MetaData";
 import { useDispatch, useSelector } from "react-redux";
 import newOrderSound from "../images/newOrderAlert.mp3";
 import { IoMdClose } from "react-icons/io";
-import FilteredOrders from "../Account/FilterOrders";
+import AdminFilteredOrders from "./AdminOrderFilter";
 import {
   getAllOrders,
   clearErrors,
   updateOrderStatus,
 } from "../actions/orderAction";
+import { getOutletInfo } from "../actions/adminAction";
 import { getSingleUser } from "../actions/adminAction";
 import { MdOutlineLocationOn } from "react-icons/md";
 import { format } from "date-fns";
@@ -22,11 +23,12 @@ import { FaBox } from "react-icons/fa";
 import { Button, CircularProgress } from "@mui/material";
 import NewOrderPopup from "./NewOrderPopup";
 import OrderStatusStepper from "./OrderStatusStepper";
-import OrderBill from "./OrderBill";
+import SmallReceiptGenerator from "./SmallReceiptGenerator";
 import { FaRegUserCircle } from "react-icons/fa";
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { error, orders, loading } = useSelector((state) => state.allOrders);
+  const { outlet } = useSelector((state) => state.getOutletInfo);
   const { users } = useSelector((state) => state.singleUser);
   const { error: updateError } = useSelector((state) => state.orderStatus);
 
@@ -48,7 +50,7 @@ const AdminOrders = () => {
   // Initial fetch and polling
   useEffect(() => {
     fetchOrders();
-
+    dispatch(getOutletInfo());
     const interval = setInterval(fetchOrders, 5000);
     return () => clearInterval(interval);
   }, [fetchOrders]);
@@ -149,11 +151,11 @@ const AdminOrders = () => {
                 <button onClick={closeBill}>
                   <IoMdClose size={30} />
                 </button>
-                <OrderBill order={selectedOrder} />
+                <SmallReceiptGenerator order={selectedOrder} outlet={outlet}/>
               </div>
             </div>
           )}
-          <FilteredOrders
+          <AdminFilteredOrders
             orders={orders}
             activeStatus={activeStatus}
             searchTerm={searchTerm}
@@ -248,7 +250,7 @@ const AdminOrders = () => {
                         <span>
                           <strong>Order value</strong> ₹{order.totalPrice}
                         </span>
-                        <span className="text-slate-900">ID: #{order._id}</span>
+                        <span className="text-slate-500">ID: #{order._id}</span>
                       </div>
                     </div>
                     <OrderStatusStepper
@@ -278,22 +280,26 @@ const AdminOrders = () => {
                             Call Customer
                           </a>
                         </span>
-                        {order.orderStatus !== "Delivered" &&
-                          order.orderStatus !== "cancelled" &&
-                          order.orderStatus !== "Rejected" && (
-                            <Button
-                              sx={{
-                                border: "1px solid red",
-                                color: "red",
-                                "&:hover": {
-                                  backgroundColor: "rgba(255, 0, 0, 0.1)",
-                                },
-                              }}
-                              onClick={() => handleCancelOrder(order._id)}
-                            >
-                              Cancel order
-                            </Button>
-                          )}
+                        <div className="d-flex justify-center mt-2.5">
+                          {" "}
+                          {order.orderStatus !== "Delivered" &&
+                            order.orderStatus !== "cancelled" &&
+                            order.orderStatus !== "Rejected" && (
+                              <Button
+                                sx={{
+                                  border: "1px solid red",
+                                  color: "red",
+                                  width: "90%",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                                  },
+                                }}
+                                onClick={() => handleCancelOrder(order._id)}
+                              >
+                                Cancel order
+                              </Button>
+                            )}
+                        </div>
                       </div>
                       <div className="live-order-box-2-right">
                         <>

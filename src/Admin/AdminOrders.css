@@ -68,6 +68,9 @@
 
   border-right: 1px rgb(211, 209, 209) dashed;
 }
+.live-order-box-2-left span{
+  font-size: 14px;
+}
 .live-order-box-2-right {
   width: 60%;
   padding: 0px 10px;
