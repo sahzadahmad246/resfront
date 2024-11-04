@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./AdminOrders.css";
 import AdminNav from "./AdminNav";
 import { CiSearch } from "react-icons/ci";
@@ -7,6 +7,7 @@ import MetaData from "../components/Home/MetaData";
 import { useDispatch, useSelector } from "react-redux";
 import newOrderSound from "../images/newOrderAlert.mp3";
 import { IoMdClose } from "react-icons/io";
+import FilteredOrders from "../Account/FilterOrders";
 import {
   getAllOrders,
   clearErrors,
@@ -22,15 +23,14 @@ import { Button, CircularProgress } from "@mui/material";
 import NewOrderPopup from "./NewOrderPopup";
 import OrderStatusStepper from "./OrderStatusStepper";
 import OrderBill from "./OrderBill";
-import Loader from "../components/Layout/Loader";
-import io from "socket.io-client";
-import FilteredOrders from "./OrderFilter"; // Import the new component
-
+import { FaRegUserCircle } from "react-icons/fa";
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { error, orders, loading } = useSelector((state) => state.allOrders);
   const { users } = useSelector((state) => state.singleUser);
   const { error: updateError } = useSelector((state) => state.orderStatus);
+
+  // States
   const [loadingButton, setLoadingButton] = useState(false);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [activeStatus, setActiveStatus] = useState("Accepted");
@@ -39,68 +39,45 @@ const AdminOrders = () => {
   const [showBill, setShowBill] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    const newSocket = io("https://resback-ql89.onrender.com");
-
-    newSocket.on("orders", (orders) => {
-      setFilteredOrders(orders); // set initial orders
-    });
-
-    newSocket.on("orderUpdated", (updatedOrder) => {
-      setFilteredOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        )
-      );
-    });
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
+  // Fetch orders
+  const fetchOrders = useCallback(() => {
     dispatch(getAllOrders());
   }, [dispatch]);
 
+  // Initial fetch and polling
+  useEffect(() => {
+    fetchOrders();
+
+    const interval = setInterval(fetchOrders, 5000);
+    return () => clearInterval(interval);
+  }, [fetchOrders]);
+
+  // Error handling
   useEffect(() => {
     if (error || updateError) {
       dispatch(clearErrors());
     }
   }, [error, updateError, dispatch]);
 
+  // Handle new orders and notifications
   useEffect(() => {
     if (orders && orders.length > 0) {
-      orders.forEach((order) => {
-        if (!users[order.user]) {
-          dispatch(getSingleUser(order.user));
-        }
-      });
-
-      const today = new Date();
-      const formattedToday = format(today, "yyyy-MM-dd");
-      const todayOrders = orders.filter((order) => {
-        const orderDate = new Date(order.createdAt);
-        return format(orderDate, "yyyy-MM-dd") === formattedToday;
-      });
-
-      setFilteredOrders(todayOrders);
-      const placedOrders = todayOrders.filter(
+      const placedOrders = orders.filter(
         (order) => order.orderStatus === "Placed"
       );
       setNewOrders(placedOrders);
 
-      if (todayOrders.length > prevOrdersLength && placedOrders.length > 0) {
+      if (orders.length > prevOrdersLength && placedOrders.length > 0) {
         const audio = new Audio(newOrderSound);
         audio.play();
       }
-      setPrevOrdersLength(todayOrders.length);
+      setPrevOrdersLength(orders.length);
     }
-  }, [orders, users, dispatch, prevOrdersLength]);
+  }, [orders, prevOrdersLength]);
 
-  const handleOrderStatusChange = (orderId, currentStatus) => {
+  // Order status handlers
+  const handleOrderStatusChange = async (orderId, currentStatus) => {
     setLoadingButton(true);
     let nextStatus = "";
 
@@ -115,29 +92,30 @@ const AdminOrders = () => {
         nextStatus = "Delivered";
         break;
       default:
+        setLoadingButton(false);
         return;
     }
 
-    dispatch(updateOrderStatus(orderId, nextStatus))
-      .then(() => {
-        dispatch(getAllOrders());
-        setLoadingButton(false);
-      })
-      .catch(() => {
-        setLoadingButton(false);
-      });
+    try {
+      await dispatch(updateOrderStatus(orderId, nextStatus));
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    } finally {
+      setLoadingButton(false);
+    }
   };
 
-  const handleCancelOrder = (orderId) => {
+  const handleCancelOrder = async (orderId) => {
     setLoadingButton(true);
-    dispatch(updateOrderStatus(orderId, "cancelled"))
-      .then(() => {
-        dispatch(getAllOrders());
-        setLoadingButton(false);
-      })
-      .catch(() => {
-        setLoadingButton(false);
-      });
+    try {
+      await dispatch(updateOrderStatus(orderId, "cancelled"));
+      fetchOrders();
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+    } finally {
+      setLoadingButton(false);
+    }
   };
 
   const handleOrderProcessed = (orderId) => {
@@ -146,6 +124,7 @@ const AdminOrders = () => {
     );
   };
 
+  // Bill handlers
   const handlePrintBill = (order) => {
     setSelectedOrder(order);
     setShowBill(true);
@@ -153,8 +132,8 @@ const AdminOrders = () => {
 
   const closeBill = () => {
     setShowBill(false);
+    setSelectedOrder(null);
   };
-
   return (
     <div className="dashboard-main">
       <MetaData title="Orders - Thai Chilli China" />
@@ -255,13 +234,13 @@ const AdminOrders = () => {
                             alt={users[order.user].name}
                           />
                         ) : (
-                          "Loading avatar..."
+                          <FaRegUserCircle size={25} />
                         )}
                         <span className="px-2 d-flex flex-col">
                           <span className="fs-5 fw-bold">
                             {users[order.user]
                               ? users[order.user].name
-                              : "Loading..."}
+                              : "failed to fetch name..."}
                           </span>
                         </span>
                       </span>

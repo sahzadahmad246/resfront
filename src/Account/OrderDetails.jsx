@@ -19,9 +19,9 @@ import OrderStatusStepper from "../Admin/OrderStatusStepper";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { getOutletInfo } from "../actions/adminAction";
 import InvoicePDF from "./InvoicePDF";
-import io from "socket.io-client"; // Import Socket.IO
+
 import { IoMdArrowBack, IoIosHelpCircleOutline } from "react-icons/io";
-const socket = io("https://resback-ql89.onrender.com");
+
 const OrderDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -43,17 +43,6 @@ const OrderDetails = () => {
 
   useEffect(() => {
     dispatch(getOrderDetails(id));
-
-    // Listen for real-time order updates
-    socket.on("orderStatusUpdate", (update) => {
-      if (update.orderId === id) {
-        dispatch(getOrderDetails(id));
-      }
-    });
-
-    return () => {
-      socket.off("orderStatusUpdate");
-    };
   }, [dispatch, id]);
 
   const handleBack = () => {

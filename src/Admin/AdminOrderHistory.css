@@ -7,7 +7,7 @@
 }
 
 .filter-buttons{
-    width: 50%;
+    width: 60%;
     display: flex;
     justify-content: space-around;
     padding: 0.4rem;
@@ -20,7 +20,7 @@
 
 .order-history-filters  .search-box{
     /* border: 1px solid red; */
-    width: 30%;
+    width: 25%;
     pad: 2px;
 }
 

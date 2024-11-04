@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllOrders } from "../actions/orderAction";
 import OrderStatusStepper from "./OrderStatusStepper";
 import Loader from "../components/Layout/Loader";
+import { FaRegUserCircle } from "react-icons/fa";
+import OrderExportModal from "./OrderExportModal";
 import {
   getSingleUser,
   clearErrors as singleUserClearErrors,
@@ -25,7 +27,8 @@ const AdminOrderHistory = () => {
   const [filterType, setFilterType] = useState("Delivered");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  // console.log(orders);
   useEffect(() => {
     dispatch(getAllOrders());
     if (orders && orders.length > 0) {
@@ -35,7 +38,7 @@ const AdminOrderHistory = () => {
         }
       });
     }
-  }, [dispatch, orders, users]);
+  }, []);
 
   useEffect(() => {
     filterOrders(filterType);
@@ -62,7 +65,7 @@ const AdminOrderHistory = () => {
         filtered = searchOrders(searchTerm);
         break;
       case "Rejected":
-        filtered = orders.filter((order) => order.orderStatus === "Rejected");
+        filtered = orders.filter((order) => order.orderStatus === "Rejected" || order.orderStatus === "cancelled");
         break;
       case "Delivered":
       default:
@@ -173,7 +176,7 @@ const AdminOrderHistory = () => {
                     className={filterType === "Rejected" ? "active-filter" : ""}
                     onClick={() => setFilterType("Rejected")}
                   >
-                    Rejected
+                    Undeliverd
                   </button>
                   <button
                     className={filterType === "all" ? "active-filter" : ""}
@@ -192,13 +195,14 @@ const AdminOrderHistory = () => {
                   />
                 </div>
                 <div className="export-button">
-                  <CSVLink
-                    data={exportCSVData()}
-                    filename={`order-history-${Date.now()}.csv`}
-                    className="btn btn-primary"
-                  >
-                    Export to CSV
-                  </CSVLink>
+                  <Button onClick={() => setIsExportModalOpen(true)}>
+                    Export Orders
+                  </Button>
+                  <OrderExportModal
+                    isOpen={isExportModalOpen}
+                    onClose={() => setIsExportModalOpen(false)}
+                    orders={filteredOrders}
+                  />
                 </div>
               </div>
               <div className="order-list">
@@ -225,13 +229,13 @@ const AdminOrderHistory = () => {
                                 alt={users[order.user].name}
                               />
                             ) : (
-                              "Loading avatar..."
+                              <FaRegUserCircle size={25} />
                             )}
                             <span className="px-2 d-flex flex-col">
                               <span className="fs-5 fw-bold">
                                 {users[order.user]
                                   ? users[order.user].name
-                                  : "Loading..."}
+                                  : "failed to fetch name..."}
                               </span>
                             </span>
                           </span>
