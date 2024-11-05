@@ -10,6 +10,8 @@ import {
   DialogActions,
   TextField,
   Button,
+  Paper,
+  Typography,
 } from "@mui/material";
 import { createOrder } from "../../actions/orderAction";
 import { redeemCoupon } from "../../actions/couponAction";
@@ -32,6 +34,8 @@ export default function ConfirmOrder() {
   const [codLoading, setCodLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [couponCode, setCouponCode] = useState("");
+  const [openInstructionDialog, setOpenInstructionDialog] = useState(false);
+  const [instruction, setInstruction] = useState("");
 
   const subtotal = Math.round(
     cartItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0)
@@ -52,6 +56,10 @@ export default function ConfirmOrder() {
     dispatch(redeemCoupon(couponCode, subtotal));
   };
 
+  const handleAddInstruction = () => {
+    setOpenInstructionDialog(false);
+  };
+
   const proceedToPay = async () => {
     setLoading(true);
     const paymentData = {
@@ -60,6 +68,7 @@ export default function ConfirmOrder() {
       gst,
       discount,
       total,
+      instruction,
     };
 
     sessionStorage.setItem("orderInfo", JSON.stringify(paymentData));
@@ -83,7 +92,7 @@ export default function ConfirmOrder() {
         data: { order },
       } = await axios.post(
         "https://resback-ql89.onrender.com/api/v1/process/payment",
-        { total },
+        { total, instruction },
         config
       );
 
@@ -104,6 +113,7 @@ export default function ConfirmOrder() {
         },
         notes: {
           address: "Hiranandani Estate",
+          instruction: instruction,
         },
         theme: {
           color: "#3399cc",
@@ -126,6 +136,7 @@ export default function ConfirmOrder() {
       gst,
       discount,
       total,
+      instruction,
     };
 
     sessionStorage.setItem("orderInfo", JSON.stringify(paymentData));
@@ -168,6 +179,28 @@ export default function ConfirmOrder() {
               </span>
             </div>
           </div>
+          <Paper elevation={3} className="p-4">
+            <Typography variant="h6" gutterBottom>
+              Special Instructions
+            </Typography>
+            {instruction ? (
+              <Typography variant="body1" gutterBottom>
+                {instruction}
+              </Typography>
+            ) : (
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                No instructions added
+              </Typography>
+            )}
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenInstructionDialog(true)}
+              className="mt-2"
+            >
+              {instruction ? "Edit Instructions" : "Add Instructions"}
+            </Button>
+          </Paper>
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-1xl font-bold mb-4">Items in your cart</h2>
             <div className="space-y-4">
@@ -301,6 +334,33 @@ export default function ConfirmOrder() {
             {redeeming ? <CircularProgress size={25} /> : "Apply"}
           </Button>
           <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog 
+        open={openInstructionDialog} 
+        onClose={() => setOpenInstructionDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Add Instructions</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Special Instructions"
+            variant="outlined"
+            value={instruction}
+            onChange={(e) => setInstruction(e.target.value)}
+            fullWidth
+            multiline
+            rows={4}
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddInstruction} color="primary">
+            Save
+          </Button>
+          <Button onClick={() => setOpenInstructionDialog(false)}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>

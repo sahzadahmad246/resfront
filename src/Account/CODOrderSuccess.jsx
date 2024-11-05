@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { createCODOrder } from "../actions/orderAction";
 import { removeItemFromCart } from "../actions/cartAction";
-import Loader from '../components/Layout/Loader'
+import Loader from "../components/Layout/Loader";
 const CODOrderSuccess = () => {
   const dispatch = useDispatch();
   const [orderId, setOrderId] = useState(null);
@@ -43,31 +43,32 @@ const CODOrderSuccess = () => {
           deliveryPrice: orderInfo.deliveryCharge,
           discount: orderInfo.discount,
           taxPrice: orderInfo.gst,
-          totalPrice: orderInfo.total, // Ensure this is correct
+          instruction: orderInfo.instruction,
+          totalPrice: orderInfo.total, 
         };
 
         console.log("Dispatching COD order:", order);
 
-        const response = await dispatch(createCODOrder(order)).then(() => {
-         
-          localStorage.removeItem("shippingInfo");
-          sessionStorage.removeItem("orderInfo");
-          localStorage.removeItem("cartItems");
-        })
-          .catch(error => {
+        const response = await dispatch(createCODOrder(order))
+          .then(() => {
+            localStorage.removeItem("shippingInfo");
+            sessionStorage.removeItem("orderInfo");
+            localStorage.removeItem("cartItems");
+          })
+          .catch((error) => {
             console.error("Error creating order:", error);
           });
-
 
         if (response && response.orderId) {
           setOrderId(response.orderId);
         }
 
-
         setLoading(false);
       } catch (err) {
         console.error("Error in createOrderAsync:", err);
-        setError("An error occurred while creating the order. Please try again.");
+        setError(
+          "An error occurred while creating the order. Please try again."
+        );
         setLoading(false);
       }
     };
@@ -75,9 +76,12 @@ const CODOrderSuccess = () => {
     createOrderAsync();
   }, [dispatch]);
 
-
   if (loading) {
-    return <div><Loader /></div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {

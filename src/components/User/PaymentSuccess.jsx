@@ -23,7 +23,7 @@ const PaymentSuccess = () => {
       handleCreateOrder(token);
     }
   }, [status, reference, token]);
-console.log(user)
+  console.log(user);
   const handleCreateOrder = (token) => {
     console.log("orderInfo:", orderInfo);
     console.log("cartItems:", cartItems);
@@ -47,9 +47,10 @@ console.log(user)
       deliveryPrice: orderInfo.deliveryCharge,
       discount: orderInfo.discount,
       taxPrice: orderInfo.gst,
+      instruction: orderInfo.instruction,
       totalPrice: orderInfo.total,
       userDetails: {
-        username: user.name
+        username: user.name,
       },
       token,
     };
@@ -61,7 +62,7 @@ console.log(user)
         sessionStorage.removeItem("orderInfo");
         localStorage.removeItem("cartItems");
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error creating order:", error);
       });
   };

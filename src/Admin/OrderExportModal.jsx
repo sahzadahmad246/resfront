@@ -34,8 +34,8 @@ const OrderReportGenerator = ({ isOpen, onClose, orders, outlet }) => {
   const generatePDF = () => {
     setIsGenerating(true);
     const filteredOrders = filterOrdersByDateRange();
-    console.log(filteredOrders)
-    console.log(filteredOrders.taxPrice)
+    console.log(filteredOrders);
+    console.log(filteredOrders.taxPrice);
     const doc = new jsPDF();
 
     // Title and Logo
@@ -84,7 +84,7 @@ const OrderReportGenerator = ({ isOpen, onClose, orders, outlet }) => {
       (sum, order) => sum + (order.taxPrice || 0),
       0
     );
-    console.log(totalTax)
+    console.log(totalTax);
     doc.text(`Total Revenue (INR): ${Math.round(totalRevenue)}`, 110, 61);
     doc.text(`Total Tax (INR): ${Math.round(totalTax)}`, 110, 67);
 
@@ -92,7 +92,15 @@ const OrderReportGenerator = ({ isOpen, onClose, orders, outlet }) => {
 
     doc.autoTable({
       head: [
-        ["Order ID", "Name", "Phone", "Address", "Date", "Total (INR)", "Status"],
+        [
+          "Order ID",
+          "Name",
+          "Phone",
+          "Address",
+          "Date",
+          "Total (INR)",
+          "Status",
+        ],
       ],
       body: filteredOrders.map((order) => [
         order._id,
@@ -145,7 +153,7 @@ const OrderReportGenerator = ({ isOpen, onClose, orders, outlet }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4">Generate Order Report</h2>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:space-x-4">
             <div className="flex-1">
               <label
@@ -162,7 +170,7 @@ const OrderReportGenerator = ({ isOpen, onClose, orders, outlet }) => {
                 onChange={(e) => setStartDate(new Date(e.target.value))}
               />
             </div>
-            <div className="flex-1 mt-4 sm:mt-0">
+            <div className="flex-1  sm:mt-0">
               <label
                 htmlFor="endDate"
                 className="block text-sm font-medium text-gray-700 mb-1"

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import newOrderSound from "../images/newOrderAlert.mp3";
 import { IoMdClose } from "react-icons/io";
 import AdminFilteredOrders from "./AdminOrderFilter";
+import { MdEditNote } from "react-icons/md";
 import {
   getAllOrders,
   clearErrors,
@@ -20,11 +21,19 @@ import { format } from "date-fns";
 import { BsPrinter } from "react-icons/bs";
 import { IoIosCall } from "react-icons/io";
 import { FaBox } from "react-icons/fa";
-import { Button, CircularProgress } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import NewOrderPopup from "./NewOrderPopup";
 import OrderStatusStepper from "./OrderStatusStepper";
-import SmallReceiptGenerator from "./SmallReceiptGenerator";
+import OrderBill from "./OrderBill";
 import { FaRegUserCircle } from "react-icons/fa";
+
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { error, orders, loading } = useSelector((state) => state.allOrders);
@@ -53,7 +62,7 @@ const AdminOrders = () => {
     dispatch(getOutletInfo());
     const interval = setInterval(fetchOrders, 5000);
     return () => clearInterval(interval);
-  }, [fetchOrders]);
+  }, [fetchOrders, dispatch]);
 
   // Error handling
   useEffect(() => {
@@ -136,6 +145,7 @@ const AdminOrders = () => {
     setShowBill(false);
     setSelectedOrder(null);
   };
+
   return (
     <div className="dashboard-main">
       <MetaData title="Orders - Thai Chilli China" />
@@ -145,16 +155,17 @@ const AdminOrders = () => {
           <AdminNav />
         </div>
         <div className="dashboard-right">
-          {showBill && (
-            <div className="showBill">
-              <div className="modelContent">
-                <button onClick={closeBill}>
-                  <IoMdClose size={30} />
-                </button>
-                <SmallReceiptGenerator order={selectedOrder} outlet={outlet}/>
-              </div>
-            </div>
-          )}
+          <Dialog open={showBill} onClose={closeBill} maxWidth="md" fullWidth>
+            <DialogTitle>Order Bill</DialogTitle>
+            <DialogContent>
+              {selectedOrder && <OrderBill order={selectedOrder} />}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={closeBill} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
           <AdminFilteredOrders
             orders={orders}
             activeStatus={activeStatus}
@@ -280,8 +291,15 @@ const AdminOrders = () => {
                             Call Customer
                           </a>
                         </span>
+                        <span className="d-flex items-center">
+                          <span className="bg-gray-200 p-2 m-2 rounded-full">
+                            <MdEditNote size={25} />
+                          </span>
+                          <span className="text-slate-500">
+                            {order.instruction}{" "}
+                          </span>
+                        </span>
                         <div className="d-flex justify-center mt-2.5">
-                          {" "}
                           {order.orderStatus !== "Delivered" &&
                             order.orderStatus !== "cancelled" &&
                             order.orderStatus !== "Rejected" && (
@@ -345,7 +363,7 @@ const AdminOrders = () => {
                             <span className="d-flex items-center text-blue-600">
                               <Button
                                 variant="text"
-                                className={` ${
+                                className={`${
                                   loadingButton
                                     ? "opacity-50 cursor-not-allowed"
                                     : ""
@@ -372,7 +390,7 @@ const AdminOrders = () => {
                               <span className="text-green-600">
                                 Order was delivered on{" "}
                                 {format(
-                                  order.deliveredAt,
+                                  new Date(order.deliveredAt),
                                   "dd/MM/yyyy, 'at' hh:mm a"
                                 )}
                               </span>
