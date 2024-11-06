@@ -18,7 +18,7 @@ import { CiUnlock, CiLock } from "react-icons/ci";
 import { haversineDistance } from "../User/haversineDistance";
 import LastOrderProducts from "../Home/LastOrderProducts";
 import LiveOrder from "./../../Account/Liveorder";
-
+import ProductCard1 from "../Product/ProductCard1";
 const Home = () => {
   const dispatch = useDispatch();
 
@@ -38,11 +38,11 @@ const Home = () => {
   const [fetchingLocation, setFetchingLocation] = useState(true);
   const [deliveryAvailable, setDeliveryAvailable] = useState(true);
   const [showLiveOrder, setShowLiveOrder] = useState(false);
-
+  const [groupedProducts, setGroupedProducts] = useState({});
   const liveOrders = orders
     ? orders.filter((order) => order.orderStatus !== "Delivered")
     : [];
-
+  console.log(products);
   useEffect(() => {
     dispatch(getOutletInfo(outlet._id));
     dispatch(getProducts());
@@ -81,6 +81,19 @@ const Home = () => {
   }, [products]);
 
   useEffect(() => {
+    if (products) {
+      const grouped = products.reduce((acc, product) => {
+        if (!acc[product.subCategory]) {
+          acc[product.subCategory] = [];
+        }
+        acc[product.subCategory].push(product);
+        return acc;
+      }, {});
+      setGroupedProducts(grouped);
+    }
+  }, [products]);
+
+  useEffect(() => {
     if (location && outlet) {
       const userLocation = {
         lat: location.lat,
@@ -100,7 +113,7 @@ const Home = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowLiveOrder(window.scrollY > 100);
+      setShowLiveOrder(window.scrollY > 0);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -221,7 +234,7 @@ const Home = () => {
                   />
                   <Link to={`/product/${product._id}`}>
                     <span className="d-flex align-items-center">
-                      <h3 className="me-2">{product.name}</h3>
+                      <h3 className="me-2 truncate">{product.name}</h3>
                       {product.foodType === "Veg" ? (
                         <img
                           src={vegIcon}
@@ -259,7 +272,88 @@ const Home = () => {
               ))}
             </div>
           </div>
-
+          <div className="subcategory-products px-4 py-8">
+            {Object.entries(groupedProducts).map(
+              ([subCategory, subCategoryProducts]) => (
+                <div key={subCategory} className="mb-12">
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="text-base font-bold">{subCategory}</h2>
+                    {subCategoryProducts.length > 5 && (
+                      <Link
+                        to={`/menu?subCategory=${encodeURIComponent(
+                          subCategory
+                        )}`}
+                        className="text-blue-600 hover:underline text-sm font-medium"
+                      >
+                        See all
+                      </Link>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 md:gap-4 p-1 sm:p-1 md:p-2">
+                    {subCategoryProducts.slice(0, 5).map((product) => (
+                      <div
+                        key={product._id}
+                        className="flex flex-col bg-white rounded-lg shadow-sm sm:shadow-md overflow-hidden m-2"
+                      >
+                        <div className="relative h-24 sm:h-32 md:h-40 w-full">
+                          <img
+                            src={product.images[0]?.url || "/placeholder.svg"}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="p-3 pt-2 sm:p-2 md:p-4 flex-grow flex flex-col justify-between">
+                          <Link
+                            to={`/product/${product._id}`}
+                            className="block"
+                          >
+                            <div className="flex items-center mb-0.5 sm:mb-1 md:mb-2">
+                              <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-800 mr-1 sm:mr-2 truncate">
+                                {product.name}
+                              </h3>
+                              {product.foodType === "Veg" ? (
+                                <img
+                                  src={vegIcon}
+                                  alt="Veg Icon"
+                                  style={{ width: "20px", height: "20px" }}
+                                />
+                              ) : product.foodType === "Non Veg" ? (
+                                <img
+                                  src={nonVegIcon}
+                                  alt="Non Veg Icon"
+                                  style={{ width: "20px", height: "20px" }}
+                                />
+                              ) : null}
+                            </div>
+                          </Link>
+                          <div className="flex justify-between items-center mt-0.5 sm:mt-1 md:mt-2">
+                            <p className="text-xs sm:text-sm md:text-base font-bold text-gray-900">
+                              ₹{product.price}
+                            </p>
+                            {product.stock > 0 ? (
+                              <button
+                                className="px-1 py-0.5 sm:px-2 sm:py-1 md:px-3 md:py-1 bg-red-600 text-white text-2xs sm:text-xs md:text-sm font-medium rounded hover:bg-red-700 transition-colors"
+                                onClick={() => handleAddToCart(product._id)}
+                              >
+                                Add
+                              </button>
+                            ) : (
+                              <button
+                                className="px-1 py-0.5 sm:px-2 sm:py-1 md:px-3 md:py-1 bg-gray-300 text-gray-600 text-2xs sm:text-xs md:text-sm font-medium rounded cursor-not-allowed"
+                                disabled
+                              >
+                                Out
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
           {isAuthenticated ? <LastOrderProducts /> : null}
           <LocationPicker />
           <LiveOrder liveOrders={liveOrders} showLiveOrder={showLiveOrder} />
