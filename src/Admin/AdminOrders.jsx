@@ -290,15 +290,18 @@ const AdminOrders = () => {
                           >
                             Call Customer
                           </a>
-                        </span>
-                        <span className="d-flex items-center">
-                          <span className="bg-gray-200 p-2 m-2 rounded-full">
-                            <MdEditNote size={25} />
+                        </span>{" "}
+                        {order.instruction && (
+                          <span className="d-flex items-center">
+                            <span className="bg-gray-200 p-2 m-2 rounded-full">
+                              <MdEditNote size={25} />
+                            </span>
+
+                            <span className="text-slate-500">
+                              {order.instruction}
+                            </span>
                           </span>
-                          <span className="text-slate-500">
-                            {order.instruction}{" "}
-                          </span>
-                        </span>
+                        )}
                         <div className="d-flex justify-center mt-2.5">
                           {order.orderStatus !== "Delivered" &&
                             order.orderStatus !== "cancelled" &&

@@ -1,52 +1,68 @@
-.live-order-container {
-  width: 50%;
-  display: flex;
-  margin: 20px auto;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 40px;
-  z-index: 1000;
-}
+import React, { useState, useRef } from "react";
+import { Link } from "react-router-dom";
+import homeBanner from ".././images/homeBanner.png";
 
-.order-content {
-  display: flex;
-  border: 1px solid #ddd;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0px 10px;
-  border-radius: 10px;
-  background-color: #fff;
-}
+const LiveOrder = ({ liveOrders, showLiveOrder }) => {
+  const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
+  const liveOrderRef = useRef(null);
 
-.order-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  if (!liveOrders || liveOrders.length === 0) return null;
 
-.order-info img {
-  width: 60px;
-  height: 60px;
-  padding: 5px;
-  object-fit: cover;
-  border-radius: 15px;
-}
+  const handlePrev = () => {
+    setCurrentOrderIndex((prevIndex) =>
+      prevIndex === 0 ? liveOrders.length - 1 : prevIndex - 1
+    );
+  };
+ 
+  const handleNext = () => {
+    setCurrentOrderIndex((prevIndex) =>
+      prevIndex === liveOrders.length - 1 ? 0 : prevIndex + 1
+    );
+  };
 
-.view-order-link {
-  background: rgb(246, 58, 58);
-  color: #fff;
-  padding: 5px;
-  border-radius: 10px;
-}
+  const currentOrder = liveOrders[currentOrderIndex];
 
-@media only screen and (max-width: 767px) {
-  .live-order-container {
-    width: 100%;
-  }
-  .order-content {
-    border-radius: 0px;
-    background: rgb(224, 235, 238);
-  }
-}
+  return (
+    <div
+      ref={liveOrderRef}
+      className={`fixed left-1/2 transform -translate-x-1/2 bottom-10 z-50 w-full md:w-1/2 ${
+        showLiveOrder ? "opacity-100" : "opacity-0 pointer-events-none"
+      } transition-opacity duration-300`}
+    >
+      <div className="flex justify-between items-center w-full bg-white md:bg-transparent border border-gray-200 rounded-none md:rounded-lg shadow-md overflow-hidden">
+        {liveOrders.length > 1 && (
+          <button onClick={handlePrev} className="p-2 text-gray-600 hover:text-gray-800">
+            &lt;
+          </button>
+        )}
+
+        <div className="flex items-center flex-grow p-2">
+          <img
+            src={currentOrder.orderItems[0].image.url || homeBanner}
+            alt={currentOrder.orderItems[0].name}
+            className="w-15 h-15 object-cover rounded-lg mr-3"
+          />
+          <div className="flex flex-col">
+            <h3 className="text-sm font-semibold">{currentOrder.orderItems[0].name}</h3>
+            <span className="text-xs text-green-600">your order is {currentOrder.orderStatus}</span>
+          </div>
+        </div>
+
+        <Link
+          to={`/account/orders/${currentOrder._id}`}
+          className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition-colors duration-200"
+        >
+          View Order
+        </Link>
+
+        {liveOrders.length > 1 && (
+          <button onClick={handleNext} className="p-2 text-gray-600 hover:text-gray-800">
+            &gt;
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default LiveOrder;

@@ -1,61 +1,64 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import homeBanner from ".././images/homeBanner.png";
-import "./Liveorder.css";
+
 const LiveOrder = ({ liveOrders, showLiveOrder }) => {
   const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
   const liveOrderRef = useRef(null);
 
-  if (!liveOrders || liveOrders.length === 0) return null;
+  useEffect(() => {
+    if (!liveOrders || liveOrders.length === 0) return;
 
-  const handlePrev = () => {
-    setCurrentOrderIndex((prevIndex) =>
-      prevIndex === 0 ? liveOrders.length - 1 : prevIndex - 1
-    );
-  };
-  console.log("liveorders");
-  const handleNext = () => {
-    setCurrentOrderIndex((prevIndex) =>
-      prevIndex === liveOrders.length - 1 ? 0 : prevIndex + 1
-    );
-  };
+    const intervalId = setInterval(() => {
+      setCurrentOrderIndex((prevIndex) =>
+        prevIndex === liveOrders.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [liveOrders]);
+
+  if (!liveOrders || liveOrders.length === 0) return null;
 
   const currentOrder = liveOrders[currentOrderIndex];
 
   return (
     <div
       ref={liveOrderRef}
-      className={`live-order-container ${showLiveOrder ? "visible" : "hidden"}`}
+      className={`fixed left-1/2 transform -translate-x-1/2 bottom-16 z-50 w-full md:w-1/2 ${
+        showLiveOrder ? "opacity-100" : "opacity-0 pointer-events-none"
+      } transition-opacity duration-300`}
     >
-      <div className="order-content">
-        {liveOrders.length > 1 && (
-          <button onClick={handlePrev} className="order-nav-button">
-            &lt;
-          </button>
-        )}
-
-        <div className="order-info">
-          <img
-            src={currentOrder.orderItems[0].image.url || homeBanner}
-            alt={currentOrder.orderItems[0].name}
-            className="order-image"
-          />
-          <div className="live-order-details">
-            <h3>{currentOrder.orderItems[0].name}</h3>
-            <span className="text-success">your order is {currentOrder.orderStatus}</span>
+      <div className="flex flex-col w-full px-2 py-1 bg-white md:bg-transparent border border-gray-200 rounded-none md:rounded-lg shadow-md overflow-hidden">
+        <div className="flex justify-between items-center p-2">
+          <div className="flex flex-col flex-grow">
+            <h3 className="text-sm font-semibold truncate max-w-[200px]">
+              {currentOrder.orderItems[0].name}
+            </h3>
+            <span className="text-xs text-green-600">
+              your order is {currentOrder.orderStatus}
+            </span>
           </div>
+
+          <Link
+            to={`/account/orders/${currentOrder._id}`}
+            className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition-colors duration-200"
+          >
+            View Order
+          </Link>
         </div>
-        <Link
-          to={`/account/orders/${currentOrder._id}`}
-          className="view-order-link"
-        >
-          View Order
-        </Link>
 
         {liveOrders.length > 1 && (
-          <button onClick={handlePrev} className="order-nav-button">
-            &gt;
-          </button>
+          <div className="flex justify-center items-center space-x-1 pb-2">
+            {liveOrders.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1.5 w-1.5 rounded-full ${
+                  index === currentOrderIndex ? "bg-red-500" : "bg-gray-300"
+                }`}
+              ></div>
+            ))}
+          </div>
         )}
       </div>
     </div>
