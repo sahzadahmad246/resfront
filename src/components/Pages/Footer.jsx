@@ -1,9 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Clock, Phone, MapPin, CreditCard, AlertCircle } from "lucide-react";
-const Footer = ({ outlet }) => {
+import { Clock, Phone, MapPin, CreditCard, AlertCircle, Navigation } from "lucide-react";
+
+export default function Footer({ outlet }) {
+  const handleNavigate = () => {
+    if (outlet.location && outlet.location.coordinates) {
+      const [longitude, latitude] = outlet.location.coordinates;
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+      window.open(url, '_blank');
+    }
+  };
+
   return (
-    <footer className="bg-white text-gray-800 p-3 ">
+    <footer className="bg-white text-gray-800 p-3">
       <div className="mb-4 text-center">
         <p className="font-semibold mb-2">That's it on home page</p>
         <Link
@@ -21,9 +30,18 @@ const Footer = ({ outlet }) => {
         <div className="space-y-3">
           <div className="flex items-start">
             <MapPin className="w-5 h-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
-            <p className="text-sm text-gray-600 leading-snug">
-              {outlet.address}
-            </p>
+            <div className="flex-grow flex items-center justify-between">
+              <p className="text-sm text-gray-600 leading-snug">
+                {outlet.address}
+              </p>
+              <button
+                onClick={handleNavigate}
+                className="ml-2 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                <Navigation className="w-4 h-4 mr-1" />
+                <span className="text-xs">Navigate</span>
+              </button>
+            </div>
           </div>
           <div className="flex items-center">
             <Clock className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" />
@@ -62,6 +80,4 @@ const Footer = ({ outlet }) => {
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

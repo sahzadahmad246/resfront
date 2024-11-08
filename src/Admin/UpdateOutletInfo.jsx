@@ -8,18 +8,15 @@ import {
   clearErrors,
 } from "../actions/adminAction";
 import { toast } from "react-toastify";
-import AdminNav from "./AdminNav";
-import DashboardTop from "./DashboardTop";
 import LocationPicker from "../components/User/LocationPicker";
-import "./AdminOrders.css";
 
-const UpdateOutletInfo = ({ handleBack }) => {
+export default function Component({ handleBack }) {
   const dispatch = useDispatch();
   const { error, loading, isUpdated } = useSelector(
     (state) => state.updateOutletInfo
   );
   const { outlet: outletInfo } = useSelector((state) => state.getOutletInfo);
-  const { location, address } = useSelector((state) => state.location);
+  const { location, address: reduxAddress } = useSelector((state) => state.location);
 
   const [outletName, setOutletName] = useState("");
   const [altPhone, setAltPhone] = useState("");
@@ -33,7 +30,13 @@ const UpdateOutletInfo = ({ handleBack }) => {
   const [openTime, setOpenTime] = useState("");
   const [closeTime, setCloseTime] = useState("");
   const [closeReason, setCloseReason] = useState("");
-  const [manualAddress, setManualAddress] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [locationPickerKey, setLocationPickerKey] = useState(0);
 
   useEffect(() => {
     if (error) {
@@ -59,8 +62,25 @@ const UpdateOutletInfo = ({ handleBack }) => {
       setOpenTime(outletInfo.openTime || "");
       setCloseTime(outletInfo.closeTime || "");
       setCloseReason(outletInfo.closeReason || "");
+      setAddress(outletInfo.address || "");
+      setCity(outletInfo.city || "");
+      setPincode(outletInfo.pincode || "");
+      setLatitude(outletInfo.location?.coordinates[1] || "");
+      setLongitude(outletInfo.location?.coordinates[0] || "");
     }
   }, [outletInfo]);
+
+  useEffect(() => {
+    if (location) {
+      setLatitude(location.lat || latitude);
+      setLongitude(location.lng || longitude);
+    }
+    if (reduxAddress) {
+      setAddress(reduxAddress.address || address);
+      setCity(reduxAddress.city || city);
+      setPincode(reduxAddress.pincode || pincode);
+    }
+  }, [location, reduxAddress]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -68,11 +88,11 @@ const UpdateOutletInfo = ({ handleBack }) => {
     const formData = new FormData();
     formData.append("outletName", outletName);
     formData.append("altPhone", altPhone);
-    formData.append("address", manualAddress); // Manual address field
-    formData.append("city", location.city || "");
-    formData.append("pincode", location.pincode || "");
-    formData.append("latitude", location.lat);
-    formData.append("longitude", location.lng);
+    formData.append("address", address);
+    formData.append("city", city);
+    formData.append("pincode", pincode);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
     formData.append("gst", gst);
     formData.append("taxPercent", taxPercent);
     formData.append("termsAndConditions", termsAndConditions);
@@ -85,10 +105,9 @@ const UpdateOutletInfo = ({ handleBack }) => {
       formData.append("outletLogo", outletLogo);
     }
 
-    await dispatch(updateOutletInfo(outletInfo._id, formData)).then(() => {
-      handleBack();
-      toast.success("Outlet information updated successfully!");
-    });
+    await dispatch(updateOutletInfo(outletInfo._id, formData));
+    handleBack();
+    toast.success("Outlet information updated successfully!");
   };
 
   const handleLogoChange = (e) => {
@@ -99,6 +118,11 @@ const UpdateOutletInfo = ({ handleBack }) => {
       setLogoPreview(reader.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleDetectLocation = () => {
+    setLocationPickerKey((prevKey) => prevKey + 1);
+    setShowLocationPicker(true);
   };
 
   return (
@@ -213,17 +237,67 @@ const UpdateOutletInfo = ({ handleBack }) => {
           onChange={(e) => setCloseTime(e.target.value)}
         />
         <TextField
-          id="manual-address"
-          name="manual-address"
+          id="address"
+          name="address"
           label="Address"
           variant="outlined"
           fullWidth
           required
           margin="normal"
-          placeholder="Enter address manually"
-          value={manualAddress}
-          onChange={(e) => setManualAddress(e.target.value)}
+          placeholder="Enter address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
         />
+        <TextField
+          id="city"
+          name="city"
+          label="City"
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+          placeholder="Enter city"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <TextField
+          id="pincode"
+          name="pincode"
+          label="Pincode"
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+          placeholder="Enter pincode"
+          value={pincode}
+          onChange={(e) => setPincode(e.target.value)}
+        />
+        <TextField
+          id="latitude"
+          name="latitude"
+          label="Latitude"
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+          placeholder="Enter latitude"
+          value={latitude}
+          onChange={(e) => setLatitude(e.target.value)}
+        />
+        <TextField
+          id="longitude"
+          name="longitude"
+          label="Longitude"
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+          placeholder="Enter longitude"
+          value={longitude}
+          onChange={(e) => setLongitude(e.target.value)}
+        />
+        
+        {showLocationPicker && <LocationPicker key={locationPickerKey} />}
         <TextField
           id="terms-and-conditions"
           name="terms-and-conditions"
@@ -250,7 +324,9 @@ const UpdateOutletInfo = ({ handleBack }) => {
           value={cancellationPolicy}
           onChange={(e) => setCancellationPolicy(e.target.value)}
         />
-        <LocationPicker />
+        <Button onClick={handleDetectLocation} variant="contained">
+          Detect Location
+        </Button>
         <Button
           type="submit"
           variant="contained"
@@ -264,6 +340,4 @@ const UpdateOutletInfo = ({ handleBack }) => {
       </form>
     </div>
   );
-};
-
-export default UpdateOutletInfo;
+}
